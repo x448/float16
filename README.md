@@ -1,5 +1,5 @@
 # Float16 (Binary16) Library in Go/Golang
-[![Build Status](https://travis-ci.com/cbor-go/float16.svg?branch=master)](https://travis-ci.com/cbor-go/float16)
+[![Build Status](https://travis-ci.org/cbor-go/float16.svg?branch=master)](https://travis-ci.org/cbor-go/float16)
 [![codecov](https://codecov.io/gh/cbor-go/float16/branch/master/graph/badge.svg?v=4)](https://codecov.io/gh/cbor-go/float16)
 [![Go Report Card](https://goreportcard.com/badge/github.com/cbor-go/float16)](https://goreportcard.com/report/github.com/cbor-go/float16)
 [![Release](https://img.shields.io/github/release/cbor-go/float16.svg?style=flat-square)](https://github.com/cbor-go/float16/releases)
