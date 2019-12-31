@@ -11,7 +11,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/x448/float16"
+	"github.com/cbor-go/float16"
 )
 
 // wantF32toF16bits is a tiny subset of expected values
