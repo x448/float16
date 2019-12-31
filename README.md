@@ -1,5 +1,7 @@
-# float16 library in Go
-float16 provides [IEEE 754 half-precision floating-point numbers](https://en.wikipedia.org/wiki/Half-precision_floating-point_format) (binary16) with IEEE 754 default rounding for conversions.  
+# Float16 Library (Go/Golang)
+`float16` package provides [IEEE 754 half-precision floating-point format](https://en.wikipedia.org/wiki/Half-precision_floating-point_format) with IEEE 754 default rounding for conversions.  The IEEE 754-2008 refers to the 16-bit base-2 format as binary16.
+
+This library is used by [fxamacker/cbor](https://github.com/fxamacker/cbor) v1.4+ and is ready for production use on supported platforms.
 
 All possible 4+ billion conversions between float16 and float32 are verified to be correct.
 
@@ -8,8 +10,6 @@ Conversions between float16 and float32:
 * use IEEE 754-2008 "Round-to-Nearest RoundTiesToEven" when converting float32 to float16
 * use lossless conversion when converting float16 to float32
 * use zero allocations and take less than 3 ns/op (in pure Go) on a desktop CPU
-
-This library is used by [fxamacker/cbor](https://github.com/fxamacker/cbor) v1.4+ and is ready for production use on supported platforms.
 
 ## Status
 This float16 library produces correct results for all conversions between float16 and float32.
@@ -24,26 +24,27 @@ Current status:
 * tested on amd64 but it should work on all little-endian platforms supported by Go.
  
 Roadmap: 
-* add functions for fast batch conversions
-* speed up unit test when verifying all possible 4+ billion conversions
-* test on additional platforms
+* add a function to both convert and report precision issues in one call.
+* add functions for fast batch conversions.
+* speed up unit test when verifying all possible 4+ billion conversions.
+* test on additional platforms.
  
-## float16 to float32 conversion
+## Float16 to Float32 Conversion
 Conversions from float16 to float32 are lossless conversions.  All 65536 possible float16 to float32 conversions (in pure Go) are confirmed to be correct.  
 
 Unit tests take a fraction of a second to check all 65536 expected values for float16 to float32 conversions.
 
-## float32 to float16 conversion
+## Float32 to Float16 Conversion
 Conversions from float32 to float16 use IEEE 754 default rounding ("Round-to-Nearest RoundTiesToEven").  All 4294967296 possible float32 to float16 conversions (in pure Go) are confirmed to be correct.  
 
 Unit tests in normal mode take about 35-55 seconds to check all 4+ billion expected values for float32 to float16 conversions.  
 
 Unit tests in short mode use a small subset (65763) of expected values and finish in under 1 second while still reaching 100% code coverage.
 
-## API and Float16 type
-Float16 is a Go type with a simple API.  The only state for each Float16 is a uint16.
+## Float16 Type and API
+Float16 (capitalized) is a Go type with uint16 as the underlying state.  There are 4 exported functions and 7 exported  methods.
 ```
-package float16 // import "github.com/x448/float16"
+package float16 // import "github.com/cbor-go/float16"
 
 // Exported types
 type Float16 uint16
@@ -75,14 +76,15 @@ pi32 := pi16.Float32()
 ```
 
 ## Benchmarks
-Conversions (in pure Go) are around 3 ns/op for float16 to Float32 as well as Float32 to float16.
+Conversions (in pure Go) are around 2.65 ns/op for float16 to Float32 as well as Float32 to float16 on amd64.
 
+Frombits is included as a canary to catch overoptimized benchmarks. Frombits should be faster than all other functions.
 ```
 All functions have zero allocations except float16.String().
 
-FromFloat32pi-2  2.59ns ± 0%    // speed using Fromfloat32() to convert float32 of math.Pi to Float16
-ToFloat32pi-2    2.69ns ± 0%    // speed using Float32() to convert float16 of math.Pi to float32
-Frombits-2       0.36ns ± 8%    // speed using Frombits() to cast uint16 to Float16
+FromFloat32pi-2  2.59ns ± 0%    // speed using Fromfloat32() to convert a float32 of math.Pi to Float16
+ToFloat32pi-2    2.69ns ± 0%    // speed using Float32() to convert a float16 of math.Pi to float32
+Frombits-2       0.36ns ± 8%    // speed using Frombits() to cast a uint16 to Float16
 ```
 
 ## System Requirements
@@ -90,6 +92,9 @@ Frombits-2       0.36ns ± 8%    // speed using Frombits() to cast uint16 to Flo
 * Tested on amd64 but it should also work on all little-endian platforms supported by Go.
 
 ## Special Thanks
-Special thanks to Kathryn Long (starkat99) for creating [half-rs](https://github.com/starkat99/half-rs), a very nice rust implementation of float16. 
+Special thanks to Kathryn Long (starkat99) for creating [half-rs](https://github.com/starkat99/half-rs), a very nice rust implementation of float16.
 
+## License
+Copyright (c) 2019 Montgomery Edwards⁴⁴⁸ and Faye Amacker
 
+Licensed under [MIT License](LICENSE)
