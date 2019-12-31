@@ -1,4 +1,4 @@
-# Float16 Library (Go/Golang)
+# Float16 (Binary16) Library in Go/Golang
 `float16` package provides [IEEE 754 half-precision floating-point format](https://en.wikipedia.org/wiki/Half-precision_floating-point_format) with IEEE 754 default rounding for conversions.  The IEEE 754-2008 refers to the 16-bit base-2 format as binary16.
 
 This library is used by [fxamacker/cbor](https://github.com/fxamacker/cbor) v1.4+ and is ready for production use on supported platforms.
