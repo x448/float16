@@ -1,4 +1,10 @@
 # Float16 (Binary16) Library in Go/Golang
+[![Build Status](https://travis-ci.com/cbor-go/float16.svg?branch=master)](https://travis-ci.com/cbor-go/float16)
+[![codecov](https://codecov.io/gh/cbor-go/float16/branch/master/graph/badge.svg?v=4)](https://codecov.io/gh/cbor-go/float16)
+[![Go Report Card](https://goreportcard.com/badge/github.com/cbor-go/float16)](https://goreportcard.com/report/github.com/cbor-go/float16)
+[![Release](https://img.shields.io/github/release/cbor-go/float16.svg?style=flat-square)](https://github.com/cbor-go/float16/releases)
+[![License](http://img.shields.io/badge/license-mit-blue.svg?style=flat-square)](https://raw.githubusercontent.com/cbor-go/float16/master/LICENSE)
+
 `float16` package provides [IEEE 754 half-precision floating-point format](https://en.wikipedia.org/wiki/Half-precision_floating-point_format) with IEEE 754 default rounding for conversions.  The IEEE 754-2008 refers to the 16-bit base-2 format as binary16.
 
 This library is used by [fxamacker/cbor](https://github.com/fxamacker/cbor) v1.4+ and is ready for production use on supported platforms.
@@ -7,20 +13,21 @@ All possible 4+ billion conversions between float16 and float32 are verified to 
 
 Conversions between float16 and float32:
 
-* use IEEE 754-2008 "Round-to-Nearest RoundTiesToEven" when converting float32 to float16
-* use lossless conversion when converting float16 to float32
-* use zero allocations and take less than 3 ns/op (in pure Go) on a desktop CPU
+* float16 to float32 conversions use lossless conversion.
+* float32 to float16 conversions use IEEE 754-2008 "Round-to-Nearest RoundTiesToEven".
+* all conversions use zero allocs and are about 2.65 ns/op (in pure Go) on a desktop amd64.
+* should work on all little-endian platforms supported by Go.
 
 ## Status
 This float16 library produces correct results for all conversions between float16 and float32.
 
 Current status:
 
+* Core API is done. Some new functions are planned. Breaking API changes are unlikely.
 * 100% of unit tests pass:
   * short mode (`go test -short`) tests around 65763 conversions in 0.005s.  
   * normal mode (`go test`) tests all possible 4+ billion conversions in about 45s.  
 * 100% code coverage with both short mode and normal mode.  
-* conversions use zero allocations and take less than 3 ns/op (in pure Go) on a desktop.
 * tested on amd64 but it should work on all little-endian platforms supported by Go.
  
 Roadmap: 
@@ -88,7 +95,7 @@ Frombits-2       0.36ns ± 8%    // speed using Frombits() to cast a uint16 to F
 ```
 
 ## System Requirements
-* Tested on Go 1.12 and Go 1.13 but it should also work with older versions.
+* Tested on Go 1.11, 1.12, and 1.13 but it should also work with older versions.
 * Tested on amd64 but it should also work on all little-endian platforms supported by Go.
 
 ## Special Thanks
