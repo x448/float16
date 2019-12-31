@@ -18,6 +18,8 @@ Conversions between float16 and float32:
 * all conversions use zero allocs and are about 2.65 ns/op (in pure Go) on a desktop amd64.
 * should work on all little-endian platforms supported by Go.
 
+Other float16 methods include: IsFinite(), IsInf(), IsNaN(), IsNormal(), Signbit(), String().
+
 ## Status
 This float16 library produces correct results for all conversions between float16 and float32.
 
@@ -48,6 +50,17 @@ Unit tests in normal mode take about 35-55 seconds to check all 4+ billion expec
 
 Unit tests in short mode use a small subset (65763) of expected values and finish in under 1 second while still reaching 100% code coverage.
 
+## Usage
+Install with `go get github.com/cbor-go/float16`.
+```
+// Convert float32 to float16
+pi := float32(math.Pi)
+pi16 := float16.Fromfloat32(pi)
+
+// Convert float16 to float32
+pi32 := pi16.Float32()
+```
+
 ## Float16 Type and API
 Float16 (capitalized) is a Go type with uint16 as the underlying state.  There are 4 exported functions and 7 exported  methods.
 ```
@@ -71,16 +84,7 @@ Inf(sign int) Float16                // returns IEEE 754 half-precision infinity
 (f Float16) Signbit() bool           // returns true if f is negative or negative zero
 (f Float16) String() string          // returns the string representation of f to satisfy fmt.Stringer interface
 ```
-
-## Usage
-```
-// Convert float32 to float16
-pi := float32(math.Pi)
-pi16 := float16.Fromfloat32(pi)
-
-// Convert float16 to float32
-pi32 := pi16.Float32()
-```
+See [API](https://godoc.org/github.com/cbor-go/float16) at godoc.org for more info.
 
 ## Benchmarks
 Conversions (in pure Go) are around 2.65 ns/op for float16 to Float32 as well as Float32 to float16 on amd64.
