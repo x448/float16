@@ -25,7 +25,7 @@ This float16 library produces correct results for all conversions between float1
 
 Current status:
 
-* Core API is done. Some new functions are planned. Breaking API changes are unlikely.
+* core API is done and breaking API changes are unlikely.
 * 100% of unit tests pass:
   * short mode (`go test -short`) tests around 65763 conversions in 0.005s.  
   * normal mode (`go test`) tests all possible 4+ billion conversions in about 45s.  
