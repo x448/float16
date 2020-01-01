@@ -5,17 +5,20 @@
 [![Release](https://img.shields.io/github/release/cbor-go/float16.svg?style=flat-square)](https://github.com/cbor-go/float16/releases)
 [![License](http://img.shields.io/badge/license-mit-blue.svg?style=flat-square)](https://raw.githubusercontent.com/cbor-go/float16/master/LICENSE)
 
-`float16` package provides [IEEE 754 half-precision floating-point format](https://en.wikipedia.org/wiki/Half-precision_floating-point_format) with IEEE 754 default rounding for conversions.  IEEE 754-2008 refers to this 16-bit format as binary16.
+`float16` package provides [IEEE 754 half-precision floating-point format](https://en.wikipedia.org/wiki/Half-precision_floating-point_format) with IEEE 754 default rounding for conversions. IEEE 754-2008 refers to this 16-bit floating-point format as binary16.
 
-All possible 4+ billion conversions between float16 and float32 are verified to be correct.
+IEEE 754 default rounding ("Round-to-Nearest RoundTiesToEven") is considered the most accurate and statistically unbiased estimate of the true result.
 
-Conversions in a nutshell:
+All possible 4+ billion floating-point conversions with this library are verified to be correct.
 
+## Features
+Current features include:
 * float16 to float32 conversions use lossless conversion.
 * float32 to float16 conversions use IEEE 754-2008 "Round-to-Nearest RoundTiesToEven".
-* all conversions use zero allocs and are about 2.65 ns/op (in pure Go) on a desktop amd64.
-
-Other float16 methods include: IsFinite(), IsInf(), IsNaN(), IsNormal(), Signbit(), and String().
+* conversions use __zero allocs__ and are about __2.65 ns/op__ (in pure Go) on a desktop amd64.
+* unit tests provide 100% code coverage and check all possible 4+ billion conversions.
+* other functions include: IsFinite(), IsInf(), IsNaN(), IsNormal(), Signbit(), and String().
+* all functions in this library use zero allocs except String().
 
 ## Status
 This library is used by [fxamacker/cbor](https://github.com/fxamacker/cbor) and is ready for production use on supported platforms.
@@ -67,19 +70,19 @@ package float16 // import "github.com/cbor-go/float16"
 type Float16 uint16
 
 // Exported functions
-Fromfloat32(f32 float32) Float16     // returns Float16 converted from f32 using IEEE 754 default rounding
-Frombits(u16 uint16) Float16         // returns Float16 by casting uint16 to Float16
-NaN() Float16                        // returns IEEE 754 half-precision not-a-number
-Inf(sign int) Float16                // returns IEEE 754 half-precision infinity according to sign
+Fromfloat32(f32 float32) Float16    // Float16 converted from f32 using IEEE 754 default rounding
+Frombits(u16 uint16) Float16        // Float16 by casting uint16 to Float16
+NaN() Float16                       // IEEE 754 half-precision not-a-number
+Inf(sign int) Float16               // IEEE 754 half-precision infinity according to sign
 
 // Exported methods
-(f Float16) Float32() float32        // returns float32 converted from f16 using lossless conversion
-(f Float16) IsNaN() bool             // returns true if f is not-a-number (NaN)
-(f Float16) IsInf(sign int) bool     // returns true if f is infinite according to sign (-1=NegInf, 0=Both, 1=PosInf)
-(f Float16) IsFinite() bool          // returns true if f is not infinite or NaN
-(f Float16) IsNormal() bool          // returns true if f is not zero, infinite, subnormal, or NaN.
-(f Float16) Signbit() bool           // returns true if f is negative or negative zero
-(f Float16) String() string          // returns the string representation of f to satisfy fmt.Stringer interface
+(f Float16) Float32() float32       // float32 converted from f16 using lossless conversion
+(f Float16) IsNaN() bool            // true if f is not-a-number (NaN)
+(f Float16) IsInf(sign int) bool    // true if f is infinite based on sign (-1=NegInf, 0=any, 1=PosInf)
+(f Float16) IsFinite() bool         // true if f is not infinite or NaN
+(f Float16) IsNormal() bool         // true if f is not zero, infinite, subnormal, or NaN.
+(f Float16) Signbit() bool          // true if f is negative or negative zero
+(f Float16) String() string         // string representation of f to satisfy fmt.Stringer interface
 ```
 See [API](https://godoc.org/github.com/cbor-go/float16) at godoc.org for more info.
 
