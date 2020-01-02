@@ -70,13 +70,14 @@ package float16 // import "github.com/cbor-go/float16"
 type Float16 uint16
 
 // Exported functions
-Fromfloat32(f32 float32) Float16    // Float16 converted from f32 using IEEE 754 default rounding
-Frombits(u16 uint16) Float16        // Float16 by casting uint16 to Float16
-NaN() Float16                       // IEEE 754 half-precision not-a-number
-Inf(sign int) Float16               // IEEE 754 half-precision infinity according to sign
+Fromfloat32(f32 float32) Float16    // Float16 number converted from f32 using IEEE 754 default rounding
+Frombits(b16 uint16) Float16        // Float16 number corresponding to b16 (IEEE 754 binary16 rep.)
+NaN() Float16                       // Float16 of IEEE 754 binary16 not-a-number
+Inf(sign int) Float16               // Float16 of IEEE 754 binary16 infinity according to sign
 
 // Exported methods
-(f Float16) Float32() float32       // float32 converted from f16 using lossless conversion
+(f Float16) Float32() float32       // float32 number converted from f16 using lossless conversion
+(f Float16) Bits() uint16           // the IEEE 754 binary16 representation of f
 (f Float16) IsNaN() bool            // true if f is not-a-number (NaN)
 (f Float16) IsInf(sign int) bool    // true if f is infinite based on sign (-1=NegInf, 0=any, 1=PosInf)
 (f Float16) IsFinite() bool         // true if f is not infinite or NaN
