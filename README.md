@@ -13,6 +13,7 @@ All possible 4+ billion floating-point conversions with this library are verifie
 
 ## Features
 Current features include:
+
 * float16 to float32 conversions use lossless conversion.
 * float32 to float16 conversions use IEEE 754-2008 "Round-to-Nearest RoundTiesToEven".
 * conversions use __zero allocs__ and are about __2.65 ns/op__ (in pure Go) on a desktop amd64.
