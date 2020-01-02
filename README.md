@@ -33,7 +33,8 @@ Current status:
 * 100% code coverage with both short mode and normal mode.  
 * tested on amd64 but it should work on all little-endian platforms supported by Go.
  
-Roadmap: 
+Roadmap:
+
 * add a function to both convert and report precision issues in one call.
 * add functions for fast batch conversions.
 * speed up unit test when verifying all possible 4+ billion conversions.
