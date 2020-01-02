@@ -13,7 +13,9 @@ import (
 // Float16 represents IEEE 754 half-precision floating-point numbers (binary16).
 type Float16 uint16
 
-// Frombits returns a Float16 value by casting the specified u16 to Float16.
+// Frombits returns the float16 number corresponding to the IEEE 754 binary16
+// representation u16, with the sign bit of u16 and the result in the same bit
+// position. Frombits(Bits(x)) == x.
 func Frombits(u16 uint16) Float16 {
 	return Float16(u16)
 }
@@ -39,11 +41,17 @@ func Inf(sign int) Float16 {
 	return Float16(0x8000 | 0x7c00)
 }
 
-// Float32 simply wraps Float32.  It returns a float32
-// converted from f (Float16). This is a lossless conversion.
+// Float32 returns a float32 converted from f (Float16).
+// This is a lossless conversion.
 func (f Float16) Float32() float32 {
 	u32 := f16bitsToF32bits(uint16(f))
 	return math.Float32frombits(u32)
+}
+
+// Bits returns the IEEE 754 binary16 representation of f, with the sign bit
+// of f and the result in the same bit position. Bits(Frombits(x)) == x.
+func (f Float16) Bits() uint16 {
+	return uint16(f)
 }
 
 // IsNaN reports whether f is an IEEE 754 “not-a-number” value.

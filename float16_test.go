@@ -349,9 +349,10 @@ func TestAllToFloat32(t *testing.T) {
 }
 
 func TestFrombits(t *testing.T) {
-	f16 := float16.Frombits(0x1234)
-	if uint16(f16) != 0x1234 {
-		t.Errorf("float16.Frombits(0x7fff) returned %04x, wanted %04x", uint16(f16), 0x1234)
+	x := uint16(0x1234)
+	f16 := float16.Frombits(x)
+	if uint16(f16) != f16.Bits() || uint16(f16) != x {
+		t.Errorf("float16.Frombits(0x7fff) returned %04x, wanted %04x", uint16(f16), x)
 	}
 }
 
@@ -376,6 +377,14 @@ func TestInf(t *testing.T) {
 	negInf := float16.Inf(-1)
 	if uint16(negInf) != 0xfc00 {
 		t.Errorf("float16.Inf(-1) returned %04x, wanted %04x", uint16(negInf), 0xfc00)
+	}
+}
+
+func TestBits(t *testing.T) {
+	x := uint16(0x1234)
+	f16 := float16.Frombits(x)
+	if uint16(f16) != f16.Bits() || f16.Bits() != x {
+		t.Errorf("Bits() returned %04x, wanted %04x", uint16(f16), x)
 	}
 }
 
