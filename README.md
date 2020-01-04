@@ -26,7 +26,7 @@ This library is used by [fxamacker/cbor](https://github.com/fxamacker/cbor) and 
 
 Current status:
 
-* core API is done and breaking API changes are unlikely.
+* core API is done and breaking API changes are unlikely except Fromfloat32() to add options.
 * 100% of unit tests pass:
   * short mode (`go test -short`) tests around 65763 conversions in 0.005s.  
   * normal mode (`go test`) tests all possible 4+ billion conversions in about 45s.  
