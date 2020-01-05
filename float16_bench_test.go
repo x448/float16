@@ -13,6 +13,7 @@ import (
 var resultF16 float16.Float16
 var resultF32 float32
 var resultStr string
+var pcn float16.Precision
 
 func BenchmarkFloat32pi(b *testing.B) {
 	result := float32(0)
@@ -63,6 +64,17 @@ func BenchmarkFromFloat32subnorm(b *testing.B) {
 		result = float16.Fromfloat32(subnorm)
 	}
 	resultF16 = result
+}
+
+func BenchmarkPrecisionFromFloat32(b *testing.B) {
+	var result float16.Precision
+
+	//pi := float32(math.Pi)
+	for i := 0; i < b.N; i++ {
+		f32 := float32(0.00001) + float32(0.00001)
+		result = float16.PrecisionFromfloat32(f32)
+	}
+	pcn = result
 }
 
 func BenchmarkString(b *testing.B) {

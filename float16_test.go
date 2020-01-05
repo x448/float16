@@ -31,6 +31,7 @@ var wantF32toF16bits = []struct {
 	{in: math.Float32frombits(0x33000000), out: 0x0000}, // in f32=0.000000, out f16=0
 	{in: math.Float32frombits(0x33000001), out: 0x0001}, // in f32=0.000000, out f16=0.000000059604645
 	{in: math.Float32frombits(0x33000002), out: 0x0001}, // in f32=0.000000, out f16=0.000000059604645
+	{in: math.Float32frombits(0x387fc000), out: 0x03ff}, // in f32=0.000061, out f16=0.00006097555 // exp32=-15 (underflows binary16 exp) but round-trips
 	{in: math.Float32frombits(0x387fffff), out: 0x0400}, // in f32=0.000061, out f16=0.000061035156
 	{in: math.Float32frombits(0x38800000), out: 0x0400}, // in f32=0.000061, out f16=0.000061035156
 	{in: math.Float32frombits(0x38801fff), out: 0x0401}, // in f32=0.000061, out f16=0.00006109476
@@ -56,6 +57,7 @@ var wantF32toF16bits = []struct {
 	{in: math.Float32frombits(0x80004000), out: 0x8000}, // in f32=-0.000000, out f16=-0
 	{in: math.Float32frombits(0x807fffff), out: 0x8000}, // in f32=-0.000000, out f16=-0
 	{in: math.Float32frombits(0x80800000), out: 0x8000}, // in f32=-0.000000, out f16=-0
+	{in: math.Float32frombits(0xb87fc000), out: 0x83ff}, // in f32=-0.000061, out f16=-0.00006097555 // exp32=-15 (underflows binary16 exp) but round-trips
 	{in: math.Float32frombits(0xb87fffff), out: 0x8400}, // in f32=-0.000061, out f16=-0.000061035156
 	{in: math.Float32frombits(0xb8800000), out: 0x8400}, // in f32=-0.000061, out f16=-0.000061035156
 	{in: math.Float32frombits(0xb8801fff), out: 0x8401}, // in f32=-0.000061, out f16=-0.00006109476
@@ -249,6 +251,92 @@ var wantF32toF16bits = []struct {
 	{in: math.Float32frombits(0x477ff000), out: 0x7c00}, // in f32=65520.000000, out f16=+Inf
 }
 
+func Float32parts(f32 float32) (exp int32, coef uint32, dropped uint32) {
+	const COEFMASK uint32 = 0x7fffff // 23 least significant bits
+	const EXPSHIFT uint32 = 23
+	const EXPBIAS uint32 = 127
+	const EXPMASK uint32 = uint32(0xff) << EXPSHIFT
+	const DROPMASK uint32 = COEFMASK >> 10
+	u32 := math.Float32bits(f32)
+	exp = int32(((u32 & EXPMASK) >> EXPSHIFT) - EXPBIAS)
+	coef = u32 & COEFMASK
+	dropped = coef & DROPMASK
+	return exp, coef, dropped
+}
+
+func IsNaN32(f32 float32) bool {
+	exp, coef, _ := Float32parts(f32)
+	return (exp == 128) && (coef != 0)
+}
+
+func checkPrecision(t *testing.T, f32 float32, f16 float16.Float16, i uint64) {
+	u32 := math.Float32bits(f32)
+	u16 := f16.Bits()
+	f32bis := f16.Float32()
+	u32bis := math.Float32bits(f32bis)
+	pre := float16.PrecisionFromfloat32(f32)
+	roundtripped := u32 == u32bis
+	exp32, coef32, dropped32 := Float32parts(f32)
+
+	if roundtripped && (pre != float16.PrecisionExact) {
+		// The "undead" 2046 binary32 inputs can round-trip back to original value despite underflowing binary16 result (input exponent < -14).
+		if !(pre == float16.PrecisionUnderflow) && (exp32 < -14) && (dropped32 == 0) {
+			// The condition is too broad to exactly match 2046 but is good enough for this test.
+			t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%032b) (%f), out f16bits=0x%04x (%v), back=0x%08x (%f), got %v, wanted PrecisionExact, exp=%d, coef=%d, drpd=%d", i, u32, u32, f32, u16, f16, u32bis, f32bis, pre, exp32, coef32, dropped32)
+		}
+	} else if !roundtripped {
+		if pre == float16.PrecisionExact {
+			// this should only happen if both input and output are NaN
+			if !(f16.IsNaN() && IsNaN32(f32)) {
+				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionExact when roundtrip failed with non-special value", i, u32, f32, u16, u32bis, f32bis)
+			}
+		} else if pre == float16.PrecisionInexact {
+			if exp32 < -14 {
+				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionInexact, wanted PrecisionUnderflow", i, u32, f32, u16, u32bis, f32bis)
+			}
+			if exp32 > 15 {
+				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionInexact, wanted PrecisionOverflow", i, u32, f32, u16, u32bis, f32bis)
+			}
+			if coef32 == 0 {
+				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionInexact when coef32 is 0", i, u32, f32, u16, u32bis, f32bis)
+			}
+			if dropped32 == 0 {
+				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionInexact when dropped32 is 0", i, u32, f32, u16, u32bis, f32bis)
+			}
+		} else if pre == float16.PrecisionUnderflow {
+			if exp32 >= -14 {
+				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionUnderflow when exp32 is >= -14", i, u32, f32, u16, u32bis, f32bis)
+			}
+		} else if pre == float16.PrecisionOverflow {
+			if exp32 <= 15 {
+				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionOverflow when exp32 is <= 15", i, u32, f32, u16, u32bis, f32bis)
+			}
+		}
+	}
+
+}
+
+func TestPrecisionFromfloat32(t *testing.T) {
+	for i, v := range wantF32toF16bits {
+		f16 := float16.Fromfloat32(v.in)
+		u16 := uint16(f16)
+
+		if u16 != v.out {
+			t.Errorf("i=%d, in f32bits=0x%08x, wanted=0x%04x, got=0x%04x.", i, math.Float32bits(v.in), v.out, u16)
+		}
+
+		checkPrecision(t, v.in, f16, uint64(i))
+	}
+
+	f32 := math.Float32frombits(0x38000000)
+	f16 := float16.Fromfloat32(f32)
+	checkPrecision(t, f32, f16, uint64(0))
+
+	f32 = float32(5.5)
+	f16 = float16.Fromfloat32(f32)
+	checkPrecision(t, f32, f16, uint64(0))
+}
+
 // Test a small subset of possible conversions from float32 to Float16.
 // TestSomeFromFloat32 runs in under 1 second while TestAllFromFloat32 takes about 45 seconds.
 func TestSomeFromFloat32(t *testing.T) {
@@ -263,16 +351,15 @@ func TestSomeFromFloat32(t *testing.T) {
 	}
 }
 
-// Test all possible 4294967296 conversions from float32 to float16.
-// TestAllFromFloat32 runs in about 45 seconds using SHA512 and
-// about 40 seconds using BLAKE2B on a desktop Intel CPU.
+// Test all possible 4294967296 conversions from float32 to float16 and
+// also checks PrecisionFromfloat32().
 func TestAllFromFloat32(t *testing.T) {
 
 	if testing.Short() {
 		t.Skip("skipping TestAllFromFloat32 in short mode.")
 	}
 
-	fmt.Printf("WARNING: TestAllFromFloat32 should take 35-55 secs to run on amd64, other platforms may take longer...\n")
+	fmt.Printf("WARNING: TestAllFromFloat32 should take 60-90 secs to run on amd64, other platforms may take longer...\n")
 
 	//const wantBlake2b = "3f310bc5608a087462d361644fe66feeb4c68145f6f18eb6f1439cd7914888b6df9e30ae5350dce0635162cc6a2f23b31b3e4353ca132a3c552bdbd58baa54e6"
 	const wantSHA512 = "08670429a475164d6c4a080969e35231c77ef7069b430b5f38af22e013796b7818bbe8f5942a6ddf26de0e1dfc67d02243f483d85729ebc3762fc2948a5ca1f8"
@@ -286,7 +373,9 @@ func TestAllFromFloat32(t *testing.T) {
 		// fill results
 		for j := uint32(0); j < batchSize; j++ {
 			inF32 := math.Float32frombits(uint32(i) + uint32(j))
-			results[j] = uint16(float16.Fromfloat32(inF32))
+			f16 := float16.Fromfloat32(inF32)
+			results[j] = uint16(f16)
+			checkPrecision(t, inF32, f16, i)
 		}
 
 		// convert results to []byte
@@ -358,8 +447,8 @@ func TestFrombits(t *testing.T) {
 
 func TestNaN(t *testing.T) {
 	nan := float16.NaN()
-	if uint16(nan) != 0x7fff {
-		t.Errorf("float16.NaN() returned %04x, wanted %04x", uint16(nan), 0x7fff)
+	if !nan.IsNaN() {
+		t.Errorf("nan.IsNan() returned false, wanted true")
 	}
 }
 
@@ -422,6 +511,24 @@ func TestIsNaN(t *testing.T) {
 	f16 = float16.Float16(0x7e00)
 	if !f16.IsNaN() {
 		t.Errorf("Float16(0x7e00).IsNaN() returned false, wanted true")
+	}
+}
+
+func TestIsQuietNaN(t *testing.T) {
+
+	f16 := float16.Float16(0)
+	if f16.IsQuietNaN() {
+		t.Errorf("Float16(0).IsQuietNaN() returned true, wanted false")
+	}
+
+	f16 = float16.Float16(0x7e00)
+	if !f16.IsQuietNaN() {
+		t.Errorf("Float16(0x7e00).IsQuietNaN() returned false, wanted true")
+	}
+
+	f16 = float16.Float16(0x7e00 ^ 0x0200)
+	if f16.IsQuietNaN() {
+		t.Errorf("Float16(0x7e00 ^ 0x0200).IsQuietNaN() returned true, wanted false")
 	}
 }
 

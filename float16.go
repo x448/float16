@@ -13,6 +13,60 @@ import (
 // Float16 represents IEEE 754 half-precision floating-point numbers (binary16).
 type Float16 uint16
 
+// Precision indicates whether the conversion to Float16 is
+// exact, inexact, underflow, or overflow.
+type Precision int
+
+const (
+	PrecisionExact Precision = iota
+	PrecisionInexact
+	PrecisionUnderflow
+	PrecisionOverflow
+)
+
+// PrecisionFromFloat32 returns Precision without performing
+// the conversion.  Conversions from both Infinity and NaN
+// values will always report PrecisionExact even if NaN payload
+// or NaN-Quiet-Bit is lost. This function is kept simple to
+// allow inlining and run < 0.5 ns/op.
+func PrecisionFromfloat32(f32 float32) Precision {
+	u32 := math.Float32bits(f32)
+
+	if u32 == 0 || u32 == 0x80000000 {
+		// +- zero will always be exact conversion
+		return PrecisionExact
+	}
+
+	const COEFMASK uint32 = 0x7fffff // 23 least significant bits
+	const EXPSHIFT uint32 = 23
+	const EXPBIAS uint32 = 127
+	const EXPMASK uint32 = uint32(0xff) << EXPSHIFT
+	const DROPMASK uint32 = COEFMASK >> 10
+
+	exp := int32(((u32 & EXPMASK) >> EXPSHIFT) - EXPBIAS)
+	coef := u32 & COEFMASK
+
+	if exp == 128 {
+		// +- infinity or NaN
+		// apps may want to do extra checks for NaN separately
+		return PrecisionExact
+	}
+	if exp < -14 {
+		// There are 2046 values out of 4+ billion that can round-trip back
+		// to original value with IEEE default rounding despite this underflow.
+		return PrecisionUnderflow
+	}
+	if exp > 15 {
+		return PrecisionOverflow
+	}
+	if (coef & DROPMASK) == uint32(0) {
+		// floats within half-precision exponent range won't drop bits
+		return PrecisionExact
+	}
+
+	return PrecisionInexact
+}
+
 // Frombits returns the float16 number corresponding to the IEEE 754 binary16
 // representation u16, with the sign bit of u16 and the result in the same bit
 // position. Frombits(Bits(x)) == x.
@@ -26,9 +80,12 @@ func Fromfloat32(f32 float32) Float16 {
 	return Float16(f32bitsToF16bits(math.Float32bits(f32)))
 }
 
-// NaN returns a Float16 with Not-a-Number (NaN) value.
+// NaN returns a Float16 of IEEE 754 binary16 not-a-number (NaN).
+// Returned NaN value 0x7e01 has all exponent bits = 1 with the
+// first and last bits = 1 in the significand. This is consistent
+// with Go's 64-bit math.NaN(). Canonical CBOR in RFC 7049 uses 0x7e00.
 func NaN() Float16 {
-	return Float16(0x7c00 | 0x03ff)
+	return Float16(0x7e01)
 }
 
 // Inf returns a Float16 with an infinity value with the specified sign.
@@ -54,9 +111,15 @@ func (f Float16) Bits() uint16 {
 	return uint16(f)
 }
 
-// IsNaN reports whether f is an IEEE 754 “not-a-number” value.
+// IsNaN reports whether f is an IEEE 754 binary16 “not-a-number” value.
 func (f Float16) IsNaN() bool {
 	return (f&0x7c00 == 0x7c00) && (f&0x03ff != 0)
+}
+
+// IsQuietNaN reports whether f is a quiet (non-signaling) IEEE 754 binary16
+// “not-a-number” value.
+func (f Float16) IsQuietNaN() bool {
+	return (f&0x7c00 == 0x7c00) && (f&0x03ff != 0) && (f&0x0200 != 0)
 }
 
 // IsInf reports whether f is an infinity (inf).
