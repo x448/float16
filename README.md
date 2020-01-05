@@ -11,7 +11,7 @@ IEEE 754 default rounding ("Round-to-Nearest RoundTiesToEven") is considered the
 
 All possible 4+ billion floating-point conversions with this library are verified to be correct.
 
-This library uses the lowercase word "float16" to refer to IEEE 754 binary16. And uses capitalized "Float16" to export a Go data type representing float16.
+Lowercase "float16" refers to IEEE 754 binary16. And capitalized "Float16" refers to exported Go data type representing float16.
 
 ## Features
 Current features include:
@@ -51,7 +51,7 @@ Conversions from float32 to float16 use IEEE 754 default rounding ("Round-to-Nea
 
 Unit tests in normal mode take about 60-90 seconds to check all 4+ billion expected values for float32 to float16 conversions as well as PrecisionFromfloat32() for each.
 
-Unit tests in short mode use a small subset (65765) of expected values and finish in under 0.01 second while still reaching 100% code coverage.
+Unit tests in short mode use a small subset (around 229 float32 inputs) and finish in under 0.01 second while still reaching 100% code coverage.
 
 ## Usage
 Install with `go get github.com/cbor-go/float16`.
