@@ -6,6 +6,7 @@
 package float16
 
 import (
+	"errors"
 	"math"
 	"strconv"
 )
@@ -237,4 +238,35 @@ func f32bitsToF16bits(u32 uint32) uint16 {
 		return uint16((halfSign | uHalfExp | halfCoef) + 1)
 	}
 	return uint16(halfSign | uHalfExp | halfCoef)
+}
+
+// ErrInvalidNaNValue indicates a NaN was not received.
+var ErrInvalidNaNValue = errors.New("float16: invalid NaN value, expected IEEE 754 NaN")
+
+// FromNaN32ps converts nan to IEEE binary16 NaN while preserving both
+// signaling and payload. Unlike Fromfloat32(), which can only return
+// qNaN because it sets quiet bit = 1, this can return both sNaN and qNaN.
+// If the result is infinity (sNaN with empty payload), then the
+// lowest bit of payload is set to make the result a NaN.
+// This function was kept simple to be able to inline.
+func FromNaN32ps(nan float32) (Float16, error) {
+	const SNAN = Float16(uint16(0x7c01)) // signalling NaN
+
+	u32 := math.Float32bits(nan)
+	sign := u32 & 0x80000000
+	exp := u32 & 0x7f800000
+	coef := u32 & 0x007fffff
+
+	if (exp != 0x7f800000) || (coef == 0) {
+		return SNAN, ErrInvalidNaNValue
+	}
+
+	u16 := uint16((sign >> 16) | uint32(0x7c00) | (coef >> 13))
+
+	if (u16 & 0x03ff) == 0 {
+		// result became infinity, make it NaN by setting lowest bit in payload
+		u16 = u16 | 0x0001
+	}
+
+	return Float16(u16), nil
 }

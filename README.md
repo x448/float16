@@ -31,7 +31,7 @@ Current status:
 * core API is done and breaking API changes are unlikely.
 * 100% of unit tests pass:
   * short mode (`go test -short`) tests around 65765 conversions in 0.005s.  
-  * normal mode (`go test`) tests all possible 4+ billion conversions in about 75s.  
+  * normal mode (`go test`) tests all possible 4+ billion conversions in about 95s.  
 * 100% code coverage with both short mode and normal mode.  
 * tested on amd64 but it should work on all little-endian platforms supported by Go.
  
@@ -49,7 +49,7 @@ Unit tests take a fraction of a second to check all 65536 expected values for fl
 ## Float32 to Float16 Conversion
 Conversions from float32 to float16 use IEEE 754 default rounding ("Round-to-Nearest RoundTiesToEven").  All 4294967296 possible float32 to float16 conversions (in pure Go) are confirmed to be correct.  
 
-Unit tests in normal mode take about 60-90 seconds to check all 4+ billion expected values for float32 to float16 conversions as well as PrecisionFromfloat32() for each.
+Unit tests in normal mode take about 1-2 minutes to check all 4+ billion float32 input values and results for Fromfloat32(), FromNaN32ps(), and PrecisionFromfloat32(). 
 
 Unit tests in short mode use a small subset (around 229 float32 inputs) and finish in under 0.01 second while still reaching 100% code coverage.
 
@@ -66,7 +66,7 @@ pi32 := pi16.Float32()
 // Only convert if there's no data loss (useful for CBOR encoders)
 // PrecisionFromfloat32() is faster than the overhead of calling a function
 if float16.Precision(pi) == float16.PrecisionExact {
-	pi16 := float16.Fromfloat32(pi)
+    pi16 := float16.Fromfloat32(pi)
 }
 ```
 
@@ -79,23 +79,27 @@ package float16 // import "github.com/cbor-go/float16"
 type Float16 uint16
 
 // Exported functions
-Fromfloat32(f32 float32) Float16    // Float16 number converted from f32 using IEEE 754 default rounding
-Frombits(b16 uint16) Float16        // Float16 number corresponding to b16 (IEEE 754 binary16 rep.)
-NaN() Float16                       // Float16 of IEEE 754 binary16 not-a-number
-Inf(sign int) Float16               // Float16 of IEEE 754 binary16 infinity according to sign
+Fromfloat32(f32 float32) Float16   // Float16 number converted from f32 using IEEE 754 default rounding
+                                      with identical results to AMD and Intel F16C hardware. NaN inputs 
+                                      are converted with quiet bit always set on, to be like F16C.
+FromNAN32ps(nan float32) Float16   // Float16 NaN converted from 32-bit NaN without changing quiet bit.
+                                   // The "ps" suffix means "preserve signalling".
+Frombits(b16 uint16) Float16       // Float16 number corresponding to b16 (IEEE 754 binary16 rep.)
+NaN() Float16                      // Float16 of IEEE 754 binary16 not-a-number
+Inf(sign int) Float16              // Float16 of IEEE 754 binary16 infinity according to sign
 
 PrecisionFromfloat32(f32 float32) Precision  // quickly indicates exact, inexact, overflow, underflow
                                              // (inline and < 1 ns/op)
 // Exported methods
-(f Float16) Float32() float32       // float32 number converted from f16 using lossless conversion
-(f Float16) Bits() uint16           // the IEEE 754 binary16 representation of f
-(f Float16) IsNaN() bool            // true if f is not-a-number (NaN)
-(f Float16) IsQuietNaN() bool       // true if f is a quiet not-a-number (NaN)
-(f Float16) IsInf(sign int) bool    // true if f is infinite based on sign (-1=NegInf, 0=any, 1=PosInf)
-(f Float16) IsFinite() bool         // true if f is not infinite or NaN
-(f Float16) IsNormal() bool         // true if f is not zero, infinite, subnormal, or NaN.
-(f Float16) Signbit() bool          // true if f is negative or negative zero
-(f Float16) String() string         // string representation of f to satisfy fmt.Stringer interface
+(f Float16) Float32() float32      // float32 number converted from f16 using lossless conversion
+(f Float16) Bits() uint16          // the IEEE 754 binary16 representation of f
+(f Float16) IsNaN() bool           // true if f is not-a-number (NaN)
+(f Float16) IsQuietNaN() bool      // true if f is a quiet not-a-number (NaN)
+(f Float16) IsInf(sign int) bool   // true if f is infinite based on sign (-1=NegInf, 0=any, 1=PosInf)
+(f Float16) IsFinite() bool        // true if f is not infinite or NaN
+(f Float16) IsNormal() bool        // true if f is not zero, infinite, subnormal, or NaN.
+(f Float16) Signbit() bool         // true if f is negative or negative zero
+(f Float16) String() string        // string representation of f to satisfy fmt.Stringer interface
 ```
 See [API](https://godoc.org/github.com/cbor-go/float16) at godoc.org for more info.
 
