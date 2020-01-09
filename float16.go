@@ -21,18 +21,18 @@ type Precision int
 const (
 
 	// PrecisionExact is for subnormals that don't drop bits during conversion but not all of these can round-trip.
-	PrecisionExact     Precision = iota
+	PrecisionExact Precision = iota
 
 	// PrecisionUnknown is for Subnormals that don't drop bits during conversion but not all of these can round-trip.
 	PrecisionUnknown
 
-    // PrecisionInexact is for dropped significand bits and cannot round-trip. Some of these are subnormals.
+	// PrecisionInexact is for dropped significand bits and cannot round-trip. Some of these are subnormals.
 	PrecisionInexact
 
 	// PrecisionUnderflow is for Underflows. Cannot round-trip float32->float16->float32.
 	PrecisionUnderflow
 
-    // PrecisionOverflow is for Overflows. Cannot round-trip float32->float16->float32.
+	// PrecisionOverflow is for Overflows. Cannot round-trip float32->float16->float32.
 	PrecisionOverflow
 )
 
