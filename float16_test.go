@@ -251,131 +251,6 @@ var wantF32toF16bits = []struct {
 	{in: math.Float32frombits(0x477ff000), out: 0x7c00}, // in f32=65520.000000, out f16=+Inf
 }
 
-func float32parts(f32 float32) (exp int32, coef uint32, dropped uint32) {
-	const COEFMASK uint32 = 0x7fffff // 23 least significant bits
-	const EXPSHIFT uint32 = 23
-	const EXPBIAS uint32 = 127
-	const EXPMASK uint32 = uint32(0xff) << EXPSHIFT
-	const DROPMASK uint32 = COEFMASK >> 10
-	u32 := math.Float32bits(f32)
-	exp = int32(((u32 & EXPMASK) >> EXPSHIFT) - EXPBIAS)
-	coef = u32 & COEFMASK
-	dropped = coef & DROPMASK
-	return exp, coef, dropped
-}
-
-func isNaN32(f32 float32) bool {
-	exp, coef, _ := float32parts(f32)
-	return (exp == 128) && (coef != 0)
-}
-
-func isQuietNaN32(f32 float32) bool {
-	exp, coef, _ := float32parts(f32)
-	return (exp == 128) && (coef != 0) && ((coef & 0x00400000) != 0)
-}
-
-func checkFromNaN32ps(t *testing.T, f32 float32, f16 float16.Float16) {
-
-	if !isNaN32(f32) {
-		return
-	}
-
-	u32 := math.Float32bits(f32)
-	nan16, err := float16.FromNaN32ps(f32)
-
-	if isQuietNaN32(f32) {
-		// result should be the same
-		if err != nil {
-			t.Errorf("FromNaN32ps: qnan = 0x%08x (%f) wanted err = nil, got err = %q", u32, f32, err)
-		}
-		if uint16(nan16) != uint16(f16) {
-			t.Errorf("FromNaN32ps: qnan = 0x%08x (%f) wanted nan16 = %v, got nan16 = %v", u32, f32, f16, nan16)
-		}
-	} else {
-		// result should differ only by the signaling/quiet bit unless payload is empty
-		if err != nil {
-			t.Errorf("FromNaN32ps: snan = 0x%08x (%f) wanted err = nil, got err = %q", u32, f32, err)
-		}
-
-		coef := uint16(f16) & uint16(0x03ff)
-		payload := uint16(f16) & uint16(0x01ff)
-		diff := uint16(nan16 ^ f16)
-
-		if payload == 0 {
-			// the lowest bit needed to be set to prevent turning sNaN into infinity, so 2 bits differ
-			if diff != 0x0201 {
-				t.Errorf("FromNaN32ps: snan = 0x%08x (%f) wanted diff == 0x0201, got 0x%04x", u32, f32, diff)
-			}
-		} else {
-			// only the quiet bit was restored, so 1 bit differs
-			if diff != 0x0200 {
-				t.Errorf("FromNaN32ps: snan = 0x%08x (%f) wanted diff == 0x0200, got 0x%04x. f16=0x%04x n16=0x%04x coef=0x%04x", u32, f32, diff, uint16(f16), uint16(nan16), coef)
-			}
-		}
-	}
-}
-
-func checkPrecision(t *testing.T, f32 float32, f16 float16.Float16, i uint64) {
-	//TODO rewrite this when time allows
-
-	u32 := math.Float32bits(f32)
-	u16 := f16.Bits()
-	f32bis := f16.Float32()
-	u32bis := math.Float32bits(f32bis)
-	pre := float16.PrecisionFromfloat32(f32)
-	roundtripped := u32 == u32bis
-	exp32, coef32, dropped32 := float32parts(f32)
-
-	if roundtripped {
-		if dropped32 != 0 {
-			t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), dropped32 != 0 with successful roundtrip", i, u32, f32, u16, u32bis, f32bis)
-		}
-
-		if pre != float16.PrecisionExact {
-			if pre != float16.PrecisionSubnormal {
-				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%032b) (%f), out f16bits=0x%04x (%v), back=0x%08x (%f), got %v, wanted PrecisionExact, exp=%d, coef=%d, drpd=%d", i, u32, u32, f32, u16, f16, u32bis, f32bis, pre, exp32, coef32, dropped32)
-			}
-		}
-	} else if !roundtripped {
-		if pre == float16.PrecisionExact {
-			// this should only happen if both input and output are NaN
-			if !(f16.IsNaN() && isNaN32(f32)) {
-				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionExact when roundtrip failed with non-special value", i, u32, f32, u16, u32bis, f32bis)
-			}
-
-		} else if pre == float16.PrecisionSubnormal {
-			if exp32 < -24 {
-				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionSubnormal, wanted PrecisionUnderflow", i, u32, f32, u16, u32bis, f32bis)
-			}
-			if dropped32 != 0 {
-				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionSubnormal, wanted PrecisionInexact", i, u32, f32, u16, u32bis, f32bis)
-			}
-		} else if pre == float16.PrecisionInexact {
-			if exp32 < -24 {
-				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionInexact, wanted PrecisionUnderflow", i, u32, f32, u16, u32bis, f32bis)
-			}
-			if exp32 > 15 {
-				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionInexact, wanted PrecisionOverflow", i, u32, f32, u16, u32bis, f32bis)
-			}
-			if coef32 == 0 {
-				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionInexact when coef32 is 0", i, u32, f32, u16, u32bis, f32bis)
-			}
-			if dropped32 == 0 {
-				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionInexact when dropped32 is 0", i, u32, f32, u16, u32bis, f32bis)
-			}
-		} else if pre == float16.PrecisionUnderflow {
-			if exp32 >= -14 {
-				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionUnderflow when exp32 is >= -14", i, u32, f32, u16, u32bis, f32bis)
-			}
-		} else if pre == float16.PrecisionOverflow {
-			if exp32 <= 15 {
-				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionOverflow when exp32 is <= 15", i, u32, f32, u16, u32bis, f32bis)
-			}
-		}
-	}
-
-}
-
 func TestPrecisionFromfloat32(t *testing.T) {
 	for i, v := range wantF32toF16bits {
 		f16 := float16.Fromfloat32(v.in)
@@ -388,13 +263,60 @@ func TestPrecisionFromfloat32(t *testing.T) {
 		checkPrecision(t, v.in, f16, uint64(i))
 	}
 
-	f32 := math.Float32frombits(0x38000000)
-	f16 := float16.Fromfloat32(f32)
-	checkPrecision(t, f32, f16, uint64(0))
+	f32 := float32(5.5) // value that doesn't drop any bits in the significand, is within normal exponent range
+	pre := float16.PrecisionFromfloat32(f32)
+	if pre != float16.PrecisionExact {
+		t.Errorf("f32bits=0x%08x, wanted=PrecisionExact (%d), got=%d.", math.Float32bits(f32), float16.PrecisionExact, pre)
+	}
 
-	f32 = float32(5.5)
-	f16 = float16.Fromfloat32(f32)
-	checkPrecision(t, f32, f16, uint64(0))
+	f32 = math.Float32frombits(0x38000000) // subnormal value with coef = 0 that can round-trip float32->float16->float32
+	pre = float16.PrecisionFromfloat32(f32)
+	if pre != float16.PrecisionUnknown {
+		t.Errorf("f32bits=0x%08x, wanted=PrecisionUnknown (%d), got=%d.", math.Float32bits(f32), float16.PrecisionUnknown, pre)
+	}
+
+	f32 = math.Float32frombits(0x387fc000) // subnormal value with coef !=0 that can round-trip float32->float16->float32
+	pre = float16.PrecisionFromfloat32(f32)
+	if pre != float16.PrecisionUnknown {
+		t.Errorf("f32bits=0x%08x, wanted=PrecisionUnknown (%d), got=%d.", math.Float32bits(f32), float16.PrecisionUnknown, pre)
+	}
+
+	f32 = math.Float32frombits(0x33c00000) // subnormal value with no dropped bits that cannot round-trip float32->float16->float32
+	pre = float16.PrecisionFromfloat32(f32)
+	if pre != float16.PrecisionUnknown {
+		t.Errorf("f32bits=0x%08x, wanted=PrecisionUnknown (%d), got=%d.", math.Float32bits(f32), float16.PrecisionUnknown, pre)
+	}
+
+	f32 = math.Float32frombits(0x38000001) // subnormal value with dropped non-zero bits > 0
+	pre = float16.PrecisionFromfloat32(f32)
+	if pre != float16.PrecisionInexact {
+		t.Errorf("f32bits=0x%08x, wanted=PrecisionInexact (%d), got=%d.", math.Float32bits(f32), float16.PrecisionInexact, pre)
+	}
+
+	f32 = float32(math.Pi) // value that cannot "preserve value" because it drops bits in the significand
+	pre = float16.PrecisionFromfloat32(f32)
+	if pre != float16.PrecisionInexact {
+		t.Errorf("f32bits=0x%08x, wanted=PrecisionInexact (%d), got=%d.", math.Float32bits(f32), float16.PrecisionInexact, pre)
+	}
+
+	f32 = math.Float32frombits(0x1) // value that will underflow
+	pre = float16.PrecisionFromfloat32(f32)
+	if pre != float16.PrecisionUnderflow {
+		t.Errorf("f32bits=0x%08x, wanted=PrecisionUnderflow (%d), got=%d.", math.Float32bits(f32), float16.PrecisionUnderflow, pre)
+	}
+
+	f32 = math.Float32frombits(0x33000000) // value that will underflow
+	pre = float16.PrecisionFromfloat32(f32)
+	if pre != float16.PrecisionUnderflow {
+		t.Errorf("f32bits=0x%08x, wanted=PrecisionUnderflow (%d), got=%d.", math.Float32bits(f32), float16.PrecisionUnderflow, pre)
+	}
+
+	f32 = math.Float32frombits(0x47800000) // value that will overflow
+	pre = float16.PrecisionFromfloat32(f32)
+	if pre != float16.PrecisionOverflow {
+		t.Errorf("f32bits=0x%08x, wanted=PrecisionOverflow (%d), got=%d.", math.Float32bits(f32), float16.PrecisionOverflow, pre)
+	}
+
 }
 
 func TestFromNaN32ps(t *testing.T) {
@@ -721,4 +643,130 @@ func TestIsInf(t *testing.T) {
 	if !f16.IsInf(-1) {
 		t.Errorf("Float16(0xfc00).IsInf(-1) returned false, wanted true")
 	}
+}
+
+func float32parts(f32 float32) (exp int32, coef uint32, dropped uint32) {
+	const COEFMASK uint32 = 0x7fffff // 23 least significant bits
+	const EXPSHIFT uint32 = 23
+	const EXPBIAS uint32 = 127
+	const EXPMASK uint32 = uint32(0xff) << EXPSHIFT
+	const DROPMASK uint32 = COEFMASK >> 10
+	u32 := math.Float32bits(f32)
+	exp = int32(((u32 & EXPMASK) >> EXPSHIFT) - EXPBIAS)
+	coef = u32 & COEFMASK
+	dropped = coef & DROPMASK
+	return exp, coef, dropped
+}
+
+func isNaN32(f32 float32) bool {
+	exp, coef, _ := float32parts(f32)
+	return (exp == 128) && (coef != 0)
+}
+
+func isQuietNaN32(f32 float32) bool {
+	exp, coef, _ := float32parts(f32)
+	return (exp == 128) && (coef != 0) && ((coef & 0x00400000) != 0)
+}
+
+func checkFromNaN32ps(t *testing.T, f32 float32, f16 float16.Float16) {
+
+	if !isNaN32(f32) {
+		return
+	}
+
+	u32 := math.Float32bits(f32)
+	nan16, err := float16.FromNaN32ps(f32)
+
+	if isQuietNaN32(f32) {
+		// result should be the same
+		if err != nil {
+			t.Errorf("FromNaN32ps: qnan = 0x%08x (%f) wanted err = nil, got err = %q", u32, f32, err)
+		}
+		if uint16(nan16) != uint16(f16) {
+			t.Errorf("FromNaN32ps: qnan = 0x%08x (%f) wanted nan16 = %v, got nan16 = %v", u32, f32, f16, nan16)
+		}
+	} else {
+		// result should differ only by the signaling/quiet bit unless payload is empty
+		if err != nil {
+			t.Errorf("FromNaN32ps: snan = 0x%08x (%f) wanted err = nil, got err = %q", u32, f32, err)
+		}
+
+		coef := uint16(f16) & uint16(0x03ff)
+		payload := uint16(f16) & uint16(0x01ff)
+		diff := uint16(nan16 ^ f16)
+
+		if payload == 0 {
+			// the lowest bit needed to be set to prevent turning sNaN into infinity, so 2 bits differ
+			if diff != 0x0201 {
+				t.Errorf("FromNaN32ps: snan = 0x%08x (%f) wanted diff == 0x0201, got 0x%04x", u32, f32, diff)
+			}
+		} else {
+			// only the quiet bit was restored, so 1 bit differs
+			if diff != 0x0200 {
+				t.Errorf("FromNaN32ps: snan = 0x%08x (%f) wanted diff == 0x0200, got 0x%04x. f16=0x%04x n16=0x%04x coef=0x%04x", u32, f32, diff, uint16(f16), uint16(nan16), coef)
+			}
+		}
+	}
+}
+
+func checkPrecision(t *testing.T, f32 float32, f16 float16.Float16, i uint64) {
+	//TODO rewrite this test when time allows
+
+	u32 := math.Float32bits(f32)
+	u16 := f16.Bits()
+	f32bis := f16.Float32()
+	u32bis := math.Float32bits(f32bis)
+	pre := float16.PrecisionFromfloat32(f32)
+	roundtripped := u32 == u32bis
+	exp32, coef32, dropped32 := float32parts(f32)
+
+	if roundtripped {
+		if dropped32 != 0 {
+			t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), dropped32 != 0 with successful roundtrip", i, u32, f32, u16, u32bis, f32bis)
+		}
+
+		if pre != float16.PrecisionExact {
+			// there are 2046 values that are subnormal and can round-trip float32->float16->float32
+			if pre != float16.PrecisionUnknown {
+				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%032b) (%f), out f16bits=0x%04x (%v), back=0x%08x (%f), got %v, wanted PrecisionExact, exp=%d, coef=%d, drpd=%d", i, u32, u32, f32, u16, f16, u32bis, f32bis, pre, exp32, coef32, dropped32)
+			}
+		}
+	} else if !roundtripped {
+		if pre == float16.PrecisionExact {
+			// this should only happen if both input and output are NaN
+			if !(f16.IsNaN() && isNaN32(f32)) {
+				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionExact when roundtrip failed with non-special value", i, u32, f32, u16, u32bis, f32bis)
+			}
+
+		} else if pre == float16.PrecisionUnknown {
+			if exp32 < -24 {
+				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionUnknown, wanted PrecisionUnderflow", i, u32, f32, u16, u32bis, f32bis)
+			}
+			if dropped32 != 0 {
+				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionUnknown, wanted PrecisionInexact", i, u32, f32, u16, u32bis, f32bis)
+			}
+		} else if pre == float16.PrecisionInexact {
+			if exp32 < -24 {
+				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionInexact, wanted PrecisionUnderflow", i, u32, f32, u16, u32bis, f32bis)
+			}
+			if exp32 > 15 {
+				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionInexact, wanted PrecisionOverflow", i, u32, f32, u16, u32bis, f32bis)
+			}
+			if coef32 == 0 {
+				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionInexact when coef32 is 0", i, u32, f32, u16, u32bis, f32bis)
+			}
+			if dropped32 == 0 {
+				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionInexact when dropped32 is 0", i, u32, f32, u16, u32bis, f32bis)
+			}
+		} else if pre == float16.PrecisionUnderflow {
+			if exp32 >= -14 {
+				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionUnderflow when exp32 is >= -14", i, u32, f32, u16, u32bis, f32bis)
+			}
+		} else if pre == float16.PrecisionOverflow {
+			if exp32 <= 15 {
+				t.Errorf("i=%d, PrecisionFromfloat32 in f32bits=0x%08x (%f), out f16bits=0x%04x, back=0x%08x (%f), got PrecisionOverflow when exp32 is <= 15", i, u32, f32, u16, u32bis, f32bis)
+			}
+		}
+	}
+
 }

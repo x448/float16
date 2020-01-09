@@ -20,17 +20,17 @@ type Precision int
 
 const (
 	PrecisionExact     Precision = iota
-	PrecisionSubnormal           // these subnormals didn't drop bits during conversion but not all can round-trip
-	PrecisionInexact             // these dropped bits and some of these are subnormals
-	PrecisionUnderflow
-	PrecisionOverflow
+	PrecisionUnknown             // Subnormals that don't drop bits during conversion but not all of these can round-trip.
+	PrecisionInexact             // Dropped significand bits and cannot round-trip. Some of these are subnormals.
+	PrecisionUnderflow           // Underflows. Cannot round-trip.
+	PrecisionOverflow            // Overflows. Cannot round-trip.
 )
 
 // PrecisionFromFloat32 returns Precision without performing
 // the conversion.  Conversions from both Infinity and NaN
 // values will always report PrecisionExact even if NaN payload
 // or NaN-Quiet-Bit is lost. This function is kept simple to
-// allow inlining and run < 0.5 ns/op.
+// allow inlining and run < 0.5 ns/op, to serve as a fast filter.
 func PrecisionFromfloat32(f32 float32) Precision {
 	u32 := math.Float32bits(f32)
 
@@ -54,7 +54,7 @@ func PrecisionFromfloat32(f32 float32) Precision {
 		return PrecisionExact
 	}
 
-	// wikipedia on IEEE binary16 says,
+	// https://en.wikipedia.org/wiki/Half-precision_floating-point_format says,
 	// "Decimals between 2^−24 (minimum positive subnormal) and 2^−14 (maximum subnormal): fixed interval 2^−24"
 	if exp < -24 {
 		return PrecisionUnderflow
@@ -63,12 +63,18 @@ func PrecisionFromfloat32(f32 float32) Precision {
 		return PrecisionOverflow
 	}
 	if (coef & DROPMASK) != uint32(0) {
+		// these include subnormals and non-subnormals that dropped bits
 		return PrecisionInexact
 	}
 
 	if exp < -14 {
-		// caller may want to try round-trip test for these
-		return PrecisionSubnormal
+		// Subnormals. Caller may want to test these further.
+		// There are 2046 subnormals that can successfully round-trip f32->f16->f32
+		// and 20 of those 2046 have 32-bit input coef == 0.
+		// RFC 7049 and 7049bis Draft 12 don't precisely define "preserves value"
+		// so some protocols and libraries will choose to handle subnormals differently
+		// when deciding to encode them to CBOR float32 vs float16.
+		return PrecisionUnknown
 	}
 
 	return PrecisionExact
