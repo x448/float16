@@ -63,8 +63,8 @@ pi16 := float16.Fromfloat32(pi)
 // Convert float16 to float32
 pi32 := pi16.Float32()
 
-// Only convert if there's no data loss (useful for CBOR encoders)
-// PrecisionFromfloat32() is faster than the overhead of calling a function
+// PrecisionFromfloat32() is faster than the overhead of calling a function.
+// This example only converts if there's no data loss and is not subnormal.
 if float16.Precision(pi) == float16.PrecisionExact {
     pi16 := float16.Fromfloat32(pi)
 }
@@ -88,7 +88,7 @@ Frombits(b16 uint16) Float16       // Float16 number corresponding to b16 (IEEE 
 NaN() Float16                      // Float16 of IEEE 754 binary16 not-a-number
 Inf(sign int) Float16              // Float16 of IEEE 754 binary16 infinity according to sign
 
-PrecisionFromfloat32(f32 float32) Precision  // quickly indicates exact, inexact, overflow, underflow
+PrecisionFromfloat32(f32 float32) Precision  // quickly indicates exact, ..., overflow, underflow
                                              // (inline and < 1 ns/op)
 // Exported methods
 (f Float16) Float32() float32      // float32 number converted from f16 using lossless conversion

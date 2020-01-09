@@ -15,12 +15,13 @@ import (
 type Float16 uint16
 
 // Precision indicates whether the conversion to Float16 is
-// exact, inexact, underflow, or overflow.
+// exact, subnormal without dropped bits, inexact, underflow, or overflow.
 type Precision int
 
 const (
-	PrecisionExact Precision = iota
-	PrecisionInexact
+	PrecisionExact     Precision = iota
+	PrecisionSubnormal           // these subnormals didn't drop bits during conversion but not all can round-trip
+	PrecisionInexact             // these dropped bits and some of these are subnormals
 	PrecisionUnderflow
 	PrecisionOverflow
 )
@@ -52,20 +53,25 @@ func PrecisionFromfloat32(f32 float32) Precision {
 		// apps may want to do extra checks for NaN separately
 		return PrecisionExact
 	}
-	if exp < -14 {
-		// There are 2046 values out of 4+ billion that can round-trip back
-		// to original value with IEEE default rounding despite this underflow.
+
+	// wikipedia on IEEE binary16 says,
+	// "Decimals between 2^−24 (minimum positive subnormal) and 2^−14 (maximum subnormal): fixed interval 2^−24"
+	if exp < -24 {
 		return PrecisionUnderflow
 	}
 	if exp > 15 {
 		return PrecisionOverflow
 	}
-	if (coef & DROPMASK) == uint32(0) {
-		// floats within half-precision exponent range won't drop bits
-		return PrecisionExact
+	if (coef & DROPMASK) != uint32(0) {
+		return PrecisionInexact
 	}
 
-	return PrecisionInexact
+	if exp < -14 {
+		// caller may want to try round-trip test for these
+		return PrecisionSubnormal
+	}
+
+	return PrecisionExact
 }
 
 // Frombits returns the float16 number corresponding to the IEEE 754 binary16
