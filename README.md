@@ -89,6 +89,7 @@ NaN() Float16                      // Float16 of IEEE 754 binary16 not-a-number
 Inf(sign int) Float16              // Float16 of IEEE 754 binary16 infinity according to sign
 
 PrecisionFromfloat32(f32 float32) Precision  // quickly indicates exact, ..., overflow, underflow
+                                             // PrecisionFromfloat32 is subject to change until v1.0
                                              // (inline and < 1 ns/op)
 // Exported methods
 (f Float16) Float32() float32      // float32 number converted from f16 using lossless conversion
