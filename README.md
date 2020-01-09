@@ -11,7 +11,7 @@ IEEE 754 default rounding ("Round-to-Nearest RoundTiesToEven") is considered the
 
 All possible 4+ billion floating-point conversions with this library are verified to be correct.
 
-Lowercase "float16" refers to IEEE 754 binary16. And capitalized "Float16" refers to exported Go data type representing float16.
+Lowercase "float16" refers to IEEE 754 binary16. And capitalized "Float16" refers to exported Go data type provided by this library.
 
 ## Features
 Current features include:
