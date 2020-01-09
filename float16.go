@@ -19,14 +19,24 @@ type Float16 uint16
 type Precision int
 
 const (
+
+	// PrecisionExact is for subnormals that don't drop bits during conversion but not all of these can round-trip.
 	PrecisionExact     Precision = iota
-	PrecisionUnknown             // Subnormals that don't drop bits during conversion but not all of these can round-trip.
-	PrecisionInexact             // Dropped significand bits and cannot round-trip. Some of these are subnormals.
-	PrecisionUnderflow           // Underflows. Cannot round-trip.
-	PrecisionOverflow            // Overflows. Cannot round-trip.
+
+	// PrecisionUnknown is for Subnormals that don't drop bits during conversion but not all of these can round-trip.
+	PrecisionUnknown
+
+    // PrecisionInexact is for dropped significand bits and cannot round-trip. Some of these are subnormals.
+	PrecisionInexact
+
+	// PrecisionUnderflow is for Underflows. Cannot round-trip float32->float16->float32.
+	PrecisionUnderflow
+
+    // PrecisionOverflow is for Overflows. Cannot round-trip float32->float16->float32.
+	PrecisionOverflow
 )
 
-// PrecisionFromFloat32 returns Precision without performing
+// PrecisionFromfloat32 returns Precision without performing
 // the conversion.  Conversions from both Infinity and NaN
 // values will always report PrecisionExact even if NaN payload
 // or NaN-Quiet-Bit is lost. This function is kept simple to
