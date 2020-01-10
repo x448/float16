@@ -65,7 +65,7 @@ pi32 := pi16.Float32()
 
 // PrecisionFromfloat32() is faster than the overhead of calling a function.
 // This example only converts if there's no data loss and input is not a subnormal.
-if float16.Precision(pi) == float16.PrecisionExact {
+if float16.PrecisionFromfloat32(pi) == float16.PrecisionExact {
     pi16 := float16.Fromfloat32(pi)
 }
 ```
@@ -82,7 +82,7 @@ type Float16 uint16
 Fromfloat32(f32 float32) Float16   // Float16 number converted from f32 using IEEE 754 default rounding
                                       with identical results to AMD and Intel F16C hardware. NaN inputs 
                                       are converted with quiet bit always set on, to be like F16C.
-FromNAN32ps(nan float32) Float16   // Float16 NaN converted from 32-bit NaN without changing quiet bit.
+FromNaN32ps(nan float32) Float16   // Float16 NaN converted from 32-bit NaN without changing quiet bit.
                                    // The "ps" suffix means "preserve signalling".
 Frombits(b16 uint16) Float16       // Float16 number corresponding to b16 (IEEE 754 binary16 rep.)
 NaN() Float16                      // Float16 of IEEE 754 binary16 not-a-number
