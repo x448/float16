@@ -11,7 +11,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/cbor-go/float16"
+	"github.com/x448/float16"
 )
 
 // wantF32toF16bits is a tiny subset of expected values
@@ -454,7 +454,7 @@ func TestFrombits(t *testing.T) {
 func TestNaN(t *testing.T) {
 	nan := float16.NaN()
 	if !nan.IsNaN() {
-		t.Errorf("nan.IsNan() returned false, wanted true")
+		t.Errorf("nan.IsNaN() returned false, wanted true")
 	}
 }
 

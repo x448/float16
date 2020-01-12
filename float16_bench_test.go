@@ -6,7 +6,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/cbor-go/float16"
+	"github.com/x448/float16"
 )
 
 // prevent compiler optimizing out code by assigning to these
