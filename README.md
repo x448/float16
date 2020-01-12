@@ -1,9 +1,9 @@
 # Float16 (Binary16) in Go/Golang
-[![Build Status](https://travis-ci.org/cbor-go/float16.svg?branch=master)](https://travis-ci.org/cbor-go/float16)
-[![codecov](https://codecov.io/gh/cbor-go/float16/branch/master/graph/badge.svg?v=4)](https://codecov.io/gh/cbor-go/float16)
-[![Go Report Card](https://goreportcard.com/badge/github.com/cbor-go/float16)](https://goreportcard.com/report/github.com/cbor-go/float16)
-[![Release](https://img.shields.io/github/release/cbor-go/float16.svg?style=flat-square)](https://github.com/cbor-go/float16/releases)
-[![License](http://img.shields.io/badge/license-mit-blue.svg?style=flat-square)](https://raw.githubusercontent.com/cbor-go/float16/master/LICENSE)
+[![Build Status](https://travis-ci.org/x448/float16.svg?branch=master)](https://travis-ci.org/x448/float16)
+[![codecov](https://codecov.io/gh/x448/float16/branch/master/graph/badge.svg?v=4)](https://codecov.io/gh/x448/float16)
+[![Go Report Card](https://goreportcard.com/badge/github.com/x448/float16)](https://goreportcard.com/report/github.com/x448/float16)
+[![Release](https://img.shields.io/github/release/x448/float16.svg?style=flat-square)](https://github.com/x448/float16/releases)
+[![License](http://img.shields.io/badge/license-mit-blue.svg?style=flat-square)](https://raw.githubusercontent.com/x448/float16/master/LICENSE)
 
 `float16` package provides [IEEE 754 half-precision floating-point format (binary16)](https://en.wikipedia.org/wiki/Half-precision_floating-point_format) with IEEE 754 default rounding for conversions. IEEE 754-2008 refers to this 16-bit floating-point format as binary16.
 
@@ -54,7 +54,7 @@ Unit tests in normal mode take about 1-2 minutes to check all 4+ billion float32
 Unit tests in short mode use a small subset (around 229 float32 inputs) and finish in under 0.01 second while still reaching 100% code coverage.
 
 ## Usage
-Install with `go get github.com/cbor-go/float16`.
+Install with `go get github.com/x448/float16`.
 ```
 // Convert float32 to float16
 pi := float32(math.Pi)
@@ -71,9 +71,9 @@ if float16.PrecisionFromfloat32(pi) == float16.PrecisionExact {
 ```
 
 ## Float16 Type and API
-Float16 (capitalized) is a Go type with uint16 as the underlying state.  There are 4 exported functions and 7 exported  methods.
+Float16 (capitalized) is a Go type with uint16 as the underlying state.  There are 6 exported functions and 9 exported methods.
 ```
-package float16 // import "github.com/cbor-go/float16"
+package float16 // import "github.com/x448/float16"
 
 // Exported types
 type Float16 uint16
@@ -82,8 +82,11 @@ type Float16 uint16
 Fromfloat32(f32 float32) Float16   // Float16 number converted from f32 using IEEE 754 default rounding
                                       with identical results to AMD and Intel F16C hardware. NaN inputs 
                                       are converted with quiet bit always set on, to be like F16C.
-FromNaN32ps(nan float32) Float16   // Float16 NaN converted from 32-bit NaN without changing quiet bit.
-                                   // The "ps" suffix means "preserve signalling".
+
+FromNaN32ps(nan float32) (Float16, error)   // Float16 NaN without modifying quiet bit.
+                                            // The "ps" suffix means "preserve signaling".
+											// Returns ErrInvalidNaNValue if nan isn't a NaN.
+                                 
 Frombits(b16 uint16) Float16       // Float16 number corresponding to b16 (IEEE 754 binary16 rep.)
 NaN() Float16                      // Float16 of IEEE 754 binary16 not-a-number
 Inf(sign int) Float16              // Float16 of IEEE 754 binary16 infinity according to sign
@@ -101,12 +104,11 @@ PrecisionFromfloat32(f32 float32) Precision  // quickly indicates exact, ..., ov
 (f Float16) Signbit() bool         // true if f is negative or negative zero
 (f Float16) String() string        // string representation of f to satisfy fmt.Stringer interface
 ```
-See [API](https://godoc.org/github.com/cbor-go/float16) at godoc.org for more info.
+See [API](https://godoc.org/github.com/x448/float16) at godoc.org for more info.
 
 ## Benchmarks
-Conversions (in pure Go) are around 2.65 ns/op for float16 to Float32 as well as Float32 to float16 on amd64. And speeds can vary depending on input value.
+Conversions (in pure Go) are around 2.65 ns/op for float16 -> float32 and float32 -> float16 on amd64. Speeds can vary depending on input value.
 
-Frombits is included as a canary to catch overoptimized benchmarks. It should be faster than all other functions and similar to PrecisionFromfloat32.
 ```
 All functions have zero allocations except float16.String().
 
