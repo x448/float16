@@ -18,10 +18,10 @@ Current features include:
 
 * float16 to float32 conversions use lossless conversion.
 * float32 to float16 conversions use IEEE 754-2008 "Round-to-Nearest RoundTiesToEven".
-* conversions use __zero allocs__ and are about __2.65 ns/op__ (in pure Go) on a desktop amd64.
+* conversions in pure Go take about __2.65 ns/op__ on a desktop amd64.
 * unit tests provide 100% code coverage and check all possible 4+ billion conversions.
 * other functions include: IsInf(), IsNaN(), IsNormal(), PrecisionFromfloat32(), String(), etc.
-* all functions in this library use zero allocs except String().
+* all functions in this library use __zero allocs__ except String().
 
 ## Status
 This library is used by [fxamacker/cbor](https://github.com/fxamacker/cbor) and is ready for production use on supported platforms. The version number < 1.0 indicates more functions and options are planned but not yet published.
