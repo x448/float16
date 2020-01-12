@@ -37,7 +37,7 @@ Current status:
  
 Roadmap:
 
-* add functions for fast batch conversions.
+* add functions for fast batch conversions leveraging SIMD when supported by hardware.
 * speed up unit test when verifying all possible 4+ billion conversions.
 * test on additional platforms.
  
