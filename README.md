@@ -85,7 +85,7 @@ Fromfloat32(f32 float32) Float16   // Float16 number converted from f32 using IE
 
 FromNaN32ps(nan float32) (Float16, error)   // Float16 NaN without modifying quiet bit.
                                             // The "ps" suffix means "preserve signaling".
-											// Returns ErrInvalidNaNValue if nan isn't a NaN.
+                                            // Returns ErrInvalidNaNValue if nan isn't a NaN.
                                  
 Frombits(b16 uint16) Float16       // Float16 number corresponding to b16 (IEEE 754 binary16 rep.)
 NaN() Float16                      // Float16 of IEEE 754 binary16 not-a-number
