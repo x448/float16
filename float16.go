@@ -118,6 +118,7 @@ func (e float16Error) Error() string { return string(e) }
 // qNaN because it sets quiet bit = 1, this can return both sNaN and qNaN.
 // If the result is infinity (sNaN with empty payload), then the
 // lowest bit of payload is set to make the result a NaN.
+// Returns ErrInvalidNaNValue and 0x7c01 (sNaN) if nan isn't IEEE 754 NaN.
 // This function was kept simple to be able to inline.
 func FromNaN32ps(nan float32) (Float16, error) {
 	const SNAN = Float16(uint16(0x7c01)) // signalling NaN

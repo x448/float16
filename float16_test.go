@@ -336,6 +336,9 @@ func TestFromNaN32ps(t *testing.T) {
 	if err != float16.ErrInvalidNaNValue {
 		t.Errorf("FromNaN32ps: in float32(math.Pi) wanted err float16.ErrInvalidNaNValue, got err = %q", err)
 	}
+	if err.Error() != "float16: invalid NaN value, expected IEEE 754 NaN" {
+		t.Errorf("unexpected string value returned by err.Error() for ErrInvalidNaNValue: %s", err.Error())
+	}
 	if uint16(nan) != 0x7c01 { // signalling NaN
 		t.Errorf("FromNaN32ps: in float32(math.Pi) wanted nan = 0x7c01, got nan = 0x%04x", uint16(nan))
 	}
