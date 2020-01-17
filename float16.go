@@ -6,7 +6,6 @@
 package float16
 
 import (
-	"errors"
 	"math"
 	"strconv"
 )
@@ -108,7 +107,11 @@ func Fromfloat32(f32 float32) Float16 {
 }
 
 // ErrInvalidNaNValue indicates a NaN was not received.
-var ErrInvalidNaNValue = errors.New("float16: invalid NaN value, expected IEEE 754 NaN")
+const ErrInvalidNaNValue = float16Error("float16: invalid NaN value, expected IEEE 754 NaN")
+
+type float16Error string
+
+func (e float16Error) Error() string { return string(e) }
 
 // FromNaN32ps converts nan to IEEE binary16 NaN while preserving both
 // signaling and payload. Unlike Fromfloat32(), which can only return

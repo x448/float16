@@ -18,10 +18,10 @@ Current features include:
 
 * float16 to float32 conversions use lossless conversion.
 * float32 to float16 conversions use IEEE 754-2008 "Round-to-Nearest RoundTiesToEven".
-* conversions using pure Go take about __2.65 ns/op__ on a desktop amd64.
+* conversions using pure Go take about 2.65 ns/op on a desktop amd64.
 * unit tests provide 100% code coverage and check all possible 4+ billion conversions.
 * other functions include: IsInf(), IsNaN(), IsNormal(), PrecisionFromfloat32(), String(), etc.
-* all functions in this library use __zero allocs__ except String().
+* all functions in this library use zero allocs except String().
 
 ## Status
 This library is used by [fxamacker/cbor](https://github.com/fxamacker/cbor) and is ready for production use on supported platforms. The version number < 1.0 indicates more functions and options are planned but not yet published.
@@ -75,8 +75,9 @@ Float16 (capitalized) is a Go type with uint16 as the underlying state.  There a
 ```
 package float16 // import "github.com/x448/float16"
 
-// Exported types
+// Exported types and consts
 type Float16 uint16
+const ErrInvalidNaNValue = float16Error("float16: invalid NaN value, expected IEEE 754 NaN")
 
 // Exported functions
 Fromfloat32(f32 float32) Float16   // Float16 number converted from f32 using IEEE 754 default rounding
