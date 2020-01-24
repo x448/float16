@@ -339,7 +339,7 @@ func TestFromNaN32ps(t *testing.T) {
 	if err.Error() != "float16: invalid NaN value, expected IEEE 754 NaN" {
 		t.Errorf("unexpected string value returned by err.Error() for ErrInvalidNaNValue: %s", err.Error())
 	}
-	if uint16(nan) != 0x7c01 { // signalling NaN
+	if uint16(nan) != 0x7c01 { // signaling NaN
 		t.Errorf("FromNaN32ps: in float32(math.Pi) wanted nan = 0x7c01, got nan = 0x%04x", uint16(nan))
 	}
 
@@ -380,7 +380,7 @@ func TestAllFromFloat32(t *testing.T) {
 	for i := uint64(0); i < uint64(0xFFFFFFFF); i += uint64(batchSize) {
 		// fill results
 		for j := uint32(0); j < batchSize; j++ {
-			inF32 := math.Float32frombits(uint32(i) + uint32(j))
+			inF32 := math.Float32frombits(uint32(i) + j)
 			f16 := float16.Fromfloat32(inF32)
 			results[j] = uint16(f16)
 			checkPrecision(t, inF32, f16, i)
@@ -423,7 +423,7 @@ func TestAllToFloat32(t *testing.T) {
 	for i := uint64(0); i < uint64(0xFFFF); i += uint64(batchSize) {
 		// fill results
 		for j := uint32(0); j < batchSize; j++ {
-			inU16 := uint16((uint16(i) + uint16(j)))
+			inU16 := uint16(i) + uint16(j)
 			f16 := float16.Float16(inU16)
 			results[j] = f16.Float32()
 		}
