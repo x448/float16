@@ -394,7 +394,10 @@ func TestAllFromFloat32(t *testing.T) {
 		}
 
 		// update hash with []byte of results
-		h.Write(buf.Bytes())
+		_, err = h.Write(buf.Bytes())
+		if err != nil {
+			panic(err)
+		}
 
 		buf.Reset()
 	}
@@ -432,7 +435,10 @@ func TestAllToFloat32(t *testing.T) {
 		}
 
 		// update hash with []byte of results
-		h.Write(buf.Bytes())
+		_, err = h.Write(buf.Bytes())
+		if err != nil {
+			panic(err)
+		}
 
 		buf.Reset()
 	}
