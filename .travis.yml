@@ -15,8 +15,8 @@ jobs:
       script: golangci-lint run --deadline=7m
     - name: "coverage"
       script:
-      - go test -coverprofile=coverage.txt -covermode=atomic ./...
+      - go test -short -coverprofile=coverage.txt -covermode=atomic ./...
       after_success: bash <(curl -s https://codecov.io/bash)
     - name: "race"
       script:
-      - go test -race ./... -v
+      - go test -short -race ./... -v
