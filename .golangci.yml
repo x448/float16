@@ -7,6 +7,20 @@ linters-settings:
   goconst:
     min-len: 2
     min-occurrences: 2
+  gocritic:
+    enabled-tags:
+      - diagnostic
+      - experimental
+      - opinionated
+      - performance
+      - style
+    disabled-checks:
+      - dupImport # https://github.com/go-critic/go-critic/issues/845
+      - ifElseChain
+      - octalLiteral
+      - paramTypeCombine
+      - whyNoLint
+      - wrapperFunc    
   gocyclo:
     min-complexity: 15
   gofmt:
@@ -36,6 +50,7 @@ linters:
     - funlen
     - gochecknoinits
     - goconst
+    - gocritic
     - gocyclo
     - gofmt
     - goimports
@@ -65,7 +80,6 @@ linters:
   # don't enable:
   # - gochecknoglobals
   # - gocognit
-  # - gocritic
   # - godox
   # - gomnd
   # - prealloc
