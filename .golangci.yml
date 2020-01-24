@@ -22,6 +22,8 @@ linters-settings:
       - wrapperFunc
   gocyclo:
     min-complexity: 15
+  gofmt:
+    simplify: false    
   goimports:
     local-prefixes: github.com/x448/float16
   golint:
@@ -57,7 +59,6 @@ linters:
     - gofmt
     - goimports
     - golint
-    - gomnd
     - goprintffuncname
     - gosec
     - gosimple
@@ -78,20 +79,23 @@ linters:
     - unparam
     - unused
     - varcheck
-    - whitespace
+
 
   # don't enable:
   # - gochecknoglobals
   # - gocognit
   # - godox
+  # - gomnd
   # - prealloc
-
+  # - whitespace
+    
 issues:
   # Excluding configuration per-path, per-linter, per-text and per-source
   exclude-rules:
     - path: _test\.go
       linters:
         - gomnd
+        - lll
 
 # golangci.com configuration
 # https://github.com/golangci/golangci/wiki/Configuration
