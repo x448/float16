@@ -78,7 +78,7 @@ func BenchmarkPrecisionFromFloat32(b *testing.B) {
 }
 
 func BenchmarkString(b *testing.B) {
-	result := "1.5"
+	var result string
 
 	pi32 := float32(math.Pi)
 	pi16 := float16.Fromfloat32(pi32)
