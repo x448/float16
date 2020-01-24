@@ -121,7 +121,7 @@ func (e float16Error) Error() string { return string(e) }
 // Returns ErrInvalidNaNValue and 0x7c01 (sNaN) if nan isn't IEEE 754 NaN.
 // This function was kept simple to be able to inline.
 func FromNaN32ps(nan float32) (Float16, error) {
-	const SNAN = Float16(uint16(0x7c01)) // signalling NaN
+	const SNAN = Float16(uint16(0x7c01)) // signaling NaN
 
 	u32 := math.Float32bits(nan)
 	sign := u32 & 0x80000000
@@ -283,10 +283,10 @@ func f32bitsToF16bits(u32 uint32) uint16 {
 		if 14-halfExp > 24 {
 			return uint16(halfSign)
 		}
-		coef := coef | uint32(0x00800000)
-		halfCoef := coef >> uint32(14-halfExp)
+		c := coef | uint32(0x00800000)
+		halfCoef := c >> uint32(14-halfExp)
 		roundBit := uint32(1) << uint32(13-halfExp)
-		if (coef&roundBit) != 0 && (coef&(3*roundBit-1)) != 0 {
+		if (c&roundBit) != 0 && (c&(3*roundBit-1)) != 0 {
 			halfCoef++
 		}
 		return uint16(halfSign | halfCoef)
