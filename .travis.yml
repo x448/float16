@@ -28,5 +28,5 @@ jobs:
       script:
       - go test -short -race ./... -v
 
-# no default script, just use jobs
-script:
+# default script is used by arm64 (it ignores jobs with these settings)
+script: go test -short -race ./... -v
