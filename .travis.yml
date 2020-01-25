@@ -1,5 +1,11 @@
 language: go
 
+go:
+  - 1.12.x
+
+env:
+  - GO111MODULE=on
+
 arch:
   - amd64
   - arm64
@@ -10,12 +16,6 @@ matrix:
       arch: amd64
     - os: linux
       arch: arm64
-
-go:
-  - 1.12.x
-
-env:
-  - GO111MODULE=on
 
 jobs:
   include:
