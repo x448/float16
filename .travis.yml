@@ -19,7 +19,7 @@ jobs:
       script: go build ./...
     - name: "lint"
       install: curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.23.1
-      script: golangci-lint run --deadline=7m
+      script: golangci-lint run --deadline=5m
     - name: "coverage"
       script:
       - go test -short -coverprofile=coverage.txt -covermode=atomic ./...
@@ -27,3 +27,6 @@ jobs:
     - name: "race"
       script:
       - go test -short -race ./... -v
+
+# no default script, just use jobs
+script:
