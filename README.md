@@ -28,18 +28,17 @@ This library is used by [fxamacker/cbor](https://github.com/fxamacker/cbor) and 
 
 Current status:
 
-* core API is done and breaking API changes are unlikely.
+* Core API is done and breaking API changes are unlikely.
 * 100% of unit tests pass:
   * short mode (`go test -short`) tests around 65765 conversions in 0.005s.  
   * normal mode (`go test`) tests all possible 4+ billion conversions in about 95s.  
 * 100% code coverage with both short mode and normal mode.  
-* tested on amd64 but it should work on all little-endian platforms supported by Go.
+* Tested on amd64, arm64, ppc64le, and s390x.
  
 Roadmap:
 
-* add functions for fast batch conversions leveraging SIMD when supported by hardware.
-* speed up unit test when verifying all possible 4+ billion conversions.
-* test on additional platforms.
+* Add functions for fast batch conversions leveraging SIMD when supported by hardware.
+* Speed up unit test when verifying all possible 4+ billion conversions.
  
 ## Float16 to Float32 Conversion
 Conversions from float16 to float32 are lossless conversions.  All 65536 possible float16 to float32 conversions (in pure Go) are confirmed to be correct.  
@@ -121,8 +120,10 @@ PrecisionFromFloat32-2  0.29ns ± 1%  // speed using PrecisionFromfloat32() to c
 ```
 
 ## System Requirements
-* Tested on Go 1.11, 1.12, and 1.13 but it should also work with older versions.
-* Tested on amd64 but it should also work on all little-endian platforms supported by Go.
+* Go 1.12 (or newer).
+* amd64, arm64, ppc64le, or s390x.
+
+Other architectures and Go versions may work, but are not tested regularly.
 
 ## Special Thanks
 Special thanks to Kathryn Long (starkat99) for creating [half-rs](https://github.com/starkat99/half-rs), a very nice rust implementation of float16.
