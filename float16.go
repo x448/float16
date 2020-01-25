@@ -136,7 +136,7 @@ func FromNaN32ps(nan float32) (Float16, error) {
 
 	if (u16 & 0x03ff) == 0 {
 		// result became infinity, make it NaN by setting lowest bit in payload
-		u16 = u16 | 0x0001
+		u16 |= 0x0001
 	}
 
 	return Float16(u16), nil
