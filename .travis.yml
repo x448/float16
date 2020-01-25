@@ -6,6 +6,8 @@ go:
 arch:
   - amd64
   - arm64
+  - ppc64le
+  - s390x
 
 os:
   - linux
@@ -13,8 +15,14 @@ os:
 env:
   - GO111MODULE=on
 
+# this is run on all arch
+script: go test -short -race ./... -v
+
+# this is run only on linux_amd64
 jobs:
   include:
+    - os: linux
+      arch: amd64
     - name: "build"
       script: go build ./...
     - name: "lint"
@@ -24,9 +32,3 @@ jobs:
       script:
       - go test -short -coverprofile=coverage.txt -covermode=atomic ./...
       after_success: bash <(curl -s https://codecov.io/bash)
-    - name: "race"
-      script:
-      - go test -short -race ./... -v
-
-# default script is used by arm64 (it ignores jobs with these settings)
-script: go test -short -race ./... -v
