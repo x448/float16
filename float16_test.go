@@ -339,7 +339,7 @@ func TestFromNaN32ps(t *testing.T) {
 	if err.Error() != "float16: invalid NaN value, expected IEEE 754 NaN" {
 		t.Errorf("unexpected string value returned by err.Error() for ErrInvalidNaNValue: %s", err.Error())
 	}
-	if uint16(nan) != 0x7c01 { // signalling NaN
+	if uint16(nan) != 0x7c01 { // signaling NaN
 		t.Errorf("FromNaN32ps: in float32(math.Pi) wanted nan = 0x7c01, got nan = 0x%04x", uint16(nan))
 	}
 
@@ -369,7 +369,7 @@ func TestAllFromFloat32(t *testing.T) {
 
 	fmt.Printf("WARNING: TestAllFromFloat32 should take about 1-2 minutes to run on amd64, other platforms may take longer...\n")
 
-	//const wantBlake2b = "3f310bc5608a087462d361644fe66feeb4c68145f6f18eb6f1439cd7914888b6df9e30ae5350dce0635162cc6a2f23b31b3e4353ca132a3c552bdbd58baa54e6"
+	// Blake2b is "3f310bc5608a087462d361644fe66feeb4c68145f6f18eb6f1439cd7914888b6df9e30ae5350dce0635162cc6a2f23b31b3e4353ca132a3c552bdbd58baa54e6"
 	const wantSHA512 = "08670429a475164d6c4a080969e35231c77ef7069b430b5f38af22e013796b7818bbe8f5942a6ddf26de0e1dfc67d02243f483d85729ebc3762fc2948a5ca1f8"
 
 	const batchSize uint32 = 16384
@@ -380,7 +380,7 @@ func TestAllFromFloat32(t *testing.T) {
 	for i := uint64(0); i < uint64(0xFFFFFFFF); i += uint64(batchSize) {
 		// fill results
 		for j := uint32(0); j < batchSize; j++ {
-			inF32 := math.Float32frombits(uint32(i) + uint32(j))
+			inF32 := math.Float32frombits(uint32(i) + j)
 			f16 := float16.Fromfloat32(inF32)
 			results[j] = uint16(f16)
 			checkPrecision(t, inF32, f16, i)
@@ -413,7 +413,7 @@ func TestAllFromFloat32(t *testing.T) {
 // Test all 65536 conversions from float16 to float32.
 // TestAllToFloat32 runs in under 1 second.
 func TestAllToFloat32(t *testing.T) {
-	//const wantBlake2b = "078d8e3fac9480de1493f22c8f9bfc1eb2051537c536f00f621557d70eed1af057a487c3e252f6d593769f5288d5ab66d8e9cd1adba359838802944bdb731f4d"
+	// Blake2b is "078d8e3fac9480de1493f22c8f9bfc1eb2051537c536f00f621557d70eed1af057a487c3e252f6d593769f5288d5ab66d8e9cd1adba359838802944bdb731f4d"
 	const wantSHA512 = "1a4ccec9fd7b6e83310c6b4958a25778cd95f8d4f88b19950e4b8d6932a955f7fbd96b1c9bd9b2a79c3a9d34d653f55e671f8f86e6a5a876660cd38479001aa6"
 	const batchSize uint32 = 16384
 	results := make([]float32, batchSize)
@@ -423,7 +423,7 @@ func TestAllToFloat32(t *testing.T) {
 	for i := uint64(0); i < uint64(0xFFFF); i += uint64(batchSize) {
 		// fill results
 		for j := uint32(0); j < batchSize; j++ {
-			inU16 := uint16((uint16(i) + uint16(j)))
+			inU16 := uint16(i) + uint16(j)
 			f16 := float16.Float16(inU16)
 			results[j] = f16.Float32()
 		}
@@ -719,7 +719,7 @@ func checkFromNaN32ps(t *testing.T, f32 float32, f16 float16.Float16) {
 }
 
 func checkPrecision(t *testing.T, f32 float32, f16 float16.Float16, i uint64) {
-	//TODO rewrite this test when time allows
+	// TODO: rewrite this test when time allows
 
 	u32 := math.Float32bits(f32)
 	u16 := f16.Bits()
