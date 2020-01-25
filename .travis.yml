@@ -10,21 +10,23 @@ arch:
   - s390x
 
 os:
-  - linux
+  - linux  
 
 env:
   - GO111MODULE=on
 
-# this is run on all arch
-script: go test -short -race ./... -v
+# This is run on all arch. Go doesn't support -race on s390x.
+script: go test -short ./... -v
 
-# this is run only on linux_amd64
+# This is run only on linux_amd64
 jobs:
   include:
     - os: linux
       arch: amd64
-    - name: "build"
-      script: go build ./...
+    - name: "race"
+      script: 
+        - go build ./...
+        - go test -short -race ./... -v
     - name: "lint"
       install: curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.23.1
       script: golangci-lint run --deadline=5m
