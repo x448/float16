@@ -24,7 +24,7 @@ jobs:
       run: $(go env GOPATH)/bin/golangci-lint run --timeout=5m --issues-exit-code=0 -E dupl -E gocritic -E gosimple -E lll -E prealloc
 
   # Test on combination of go and os versions.
-  tests-on:
+  tests:
     name: ${{matrix.go-version}} ${{matrix.os}}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -42,6 +42,7 @@ jobs:
   # Check code coverage on latest-ubuntu with specified go version.
   cover:
     name: Coverage
+    needs: [lint, tests]
     runs-on: ubuntu-latest
     steps:
     - name: Set up Go 1.13
