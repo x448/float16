@@ -28,12 +28,12 @@ jobs:
       id: go
     - name: Code
       uses: actions/checkout@v1
-    - name: Install golangci-lint 
-      run: curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.23.1
+    - name: Install and run golangci-lint 
+      run: |
+        curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.23.1
+        golangci-lint run --timeout=5m
       shell: bash
-    - name: Lint
-      run: golangci-lint run --timeout=5m
-
+      
   cover:
     name: Coverage
     runs-on: ubuntu-latest
