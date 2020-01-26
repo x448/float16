@@ -41,21 +41,15 @@ linters-settings:
 linters:
   disable-all: true
   enable:
-    - bodyclose
     - deadcode
-    - depguard
-    - dogsled
     - dupl
     - errcheck
-    - funlen
-    - gochecknoinits
     - goconst
     - gocritic
     - gocyclo
     - gofmt
     - goimports
     - golint
-    - goprintffuncname
     - gosec
     - gosimple
     - govet
@@ -64,8 +58,6 @@ linters:
     - lll
     - maligned
     - misspell
-    - nakedret
-    - rowserrcheck
     - scopelint
     - staticcheck
     - structcheck
@@ -75,15 +67,6 @@ linters:
     - unparam
     - unused
     - varcheck
-
-
-  # don't enable:
-  # - gochecknoglobals
-  # - gocognit
-  # - godox
-  # - gomnd
-  # - prealloc
-  # - whitespace
     
 issues:
   # Excluding configuration per-path, per-linter, per-text and per-source
