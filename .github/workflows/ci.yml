@@ -1,7 +1,6 @@
 name: CI
 on: [push]
 jobs:
-
   tests-on:
     name: ${{matrix.go-version}} ${{matrix.os}}
     runs-on: ${{ matrix.os }}
@@ -16,4 +15,38 @@ jobs:
         fetch-depth: 1
     - name: Test
       run: |
-        go test -short -race ./...
+        go test -short -race -v ./...
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13
+      id: go
+    - name: Code
+      uses: actions/checkout@v1
+    - name: Install golangci-lint 
+      run: curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin v1.23.1
+      shell: bash
+    - name: Lint
+      run: golangci-lint run --timeout=5m
+
+  cover:
+    name: Coverage
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Go 1.13
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.13
+      id: go
+    - name: Code
+      uses: actions/checkout@v1
+    - name: Generate coverprofile
+      run: go test -short -coverprofile=coverage.txt -covermode=atomic ./...
+    - name: codecov.io
+      run: bash <(curl -s https://codecov.io/bash)
+      shell: bash
