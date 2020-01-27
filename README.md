@@ -1,5 +1,5 @@
 # Float16 (Binary16) in Go/Golang
-[![Build Status](https://travis-ci.org/x448/float16.svg?branch=master)](https://travis-ci.org/x448/float16)
+![](https://github.com/x448/float16/workflows/CI/badge.svg)
 [![codecov](https://codecov.io/gh/x448/float16/branch/master/graph/badge.svg?v=4)](https://codecov.io/gh/x448/float16)
 [![Go Report Card](https://goreportcard.com/badge/github.com/x448/float16)](https://goreportcard.com/report/github.com/x448/float16)
 [![Release](https://img.shields.io/github/release/x448/float16.svg?style=flat-square)](https://github.com/x448/float16/releases)
