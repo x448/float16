@@ -1,6 +1,6 @@
 # Float16 (Binary16) in Go/Golang
-![](https://github.com/x448/float16/workflows/CI/badge.svg)
-[![codecov](https://codecov.io/gh/x448/float16/branch/master/graph/badge.svg?v=4)](https://codecov.io/gh/x448/float16)
+[![](https://github.com/x448/float16/workflows/ci/badge.svg)](https://github.com/x448/float16/blob/master/.github/workflows/ci.yml)
+[![](https://github.com/x448/float16/workflows/cover%20100%25/badge.svg)](https://github.com/x448/float16/blob/master/.github/workflows/cover.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/x448/float16)](https://goreportcard.com/report/github.com/x448/float16)
 [![Release](https://img.shields.io/github/release/x448/float16.svg?style=flat-square)](https://github.com/x448/float16/releases)
 [![License](http://img.shields.io/badge/license-mit-blue.svg?style=flat-square)](https://raw.githubusercontent.com/x448/float16/master/LICENSE)
@@ -11,7 +11,7 @@ IEEE 754 default rounding ("Round-to-Nearest RoundTiesToEven") is considered the
 
 All possible 4+ billion floating-point conversions with this library are verified to be correct.
 
-Lowercase "float16" refers to IEEE 754 binary16. And capitalized "Float16" refers to exported Go data type provided by this library.
+Lowercase "float16" refers to IEEE 754 binary16. And capitalized "Float16" refers to exported Go data type.
 
 ## Features
 Current features include:
