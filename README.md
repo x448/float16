@@ -129,6 +129,6 @@ Other architectures and Go versions may work, but are not tested regularly.
 Special thanks to Kathryn Long (starkat99) for creating [half-rs](https://github.com/starkat99/half-rs), a very nice rust implementation of float16.
 
 ## License
-Copyright (c) 2019 Montgomery Edwards⁴⁴⁸ and Faye Amacker
+Copyright (c) 2019-present Montgomery Edwards⁴⁴⁸ and Faye Amacker
 
 Licensed under [MIT License](LICENSE)
