@@ -1,0 +1,23 @@
+# Go Cover - GitHub Actions Workflow
+# Author: Montgomery Edwards⁴⁴⁸ (github.com/x448)
+# This workflow checks if code coverage satisfies the required minimum.
+# The require minimum is specified in the workflow name. This keeps badge.svg and verified minimum in sync.
+# Example steps:
+# 1. Change workflow name from "cover 100%" to "cover ≥92.5%". Script will automatically use 92.5%.  
+# 2. Change README.md to use the new path to badge.svg because the path includes the workflow name.
+
+name: cover 100%
+on: [push]
+jobs:
+
+  # Verify minimum coverage is reached using `go test -short -cover` on latest-ubuntu with default version of Go.
+  cover:
+    name: Coverage
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+    - name: Go Coverage
+      run: go test -short -cover | python -c "import os,re,sys; min_cover = float(re.findall(r'\d*\.\d+|\d+', os.environ['GITHUB_WORKFLOW'])[0]); cover = float(re.findall(r'\d*\.\d+|\d+', sys.stdin.read())[0]); sys.exit(1) if (cover > 100) or (cover < min_cover) else sys.exit(0)"
