@@ -71,7 +71,7 @@ jobs:
   # Check code coverage on latest-ubuntu with default version of Go. 
   cover:
     name: Coverage
-    needs: [lint, test-on-ubuntu]   # Don't wait for any more than these two so it can run in parallel. It's why matrix was avoided.
+    # needs: [lint]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
