@@ -16,8 +16,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
+      uses: actions/checkout@v2
     - name: Go Coverage
       run: go test -short -cover | python -c "import os,re,sys; min_cover = float(re.findall(r'\d*\.\d+|\d+', os.environ['GITHUB_WORKFLOW'])[0]); cover = float(re.findall(r'\d*\.\d+|\d+', sys.stdin.read())[0]); sys.exit(1) if (cover > 100) or (cover < min_cover) else sys.exit(0)"
