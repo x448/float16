@@ -13,9 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v1
-      with:
-        fetch-depth: 2
+      uses: actions/checkout@v2
     - name: Install golangci-lint 
       run: |
         go version
@@ -23,5 +21,5 @@ jobs:
     - name: Run required linters in .golangci.yml plus hard-coded ones here
       run: $(go env GOPATH)/bin/golangci-lint run --timeout=5m -E deadcode -E errcheck -E goconst -E gocyclo -E gofmt -E golint -E gosec -E govet -E ineffassign -E maligned -E misspell -E staticcheck -E structcheck -E typecheck -E unconvert -E varcheck
     - name: Run optional linters (not required to pass)
-      run: $(go env GOPATH)/bin/golangci-lint run --timeout=5m --issues-exit-code=0 -E dupl -E gocritic -E gosimple -E lll -E prealloc -E deadcode -E errcheck -E goconst -E gocyclo -E gofmt -E golint -E gosec -E govet -E ineffassign -E maligned -E misspell -E staticcheck -E structcheck -E typecheck -E unconvert -E varcheck
+      run: $(go env GOPATH)/bin/golangci-lint run --timeout=5m --issues-exit-code=0 -E dupl -E gocritic -E gosimple -E lll -E prealloc -E deadcode -E errcheck -E goconst -E gocyclo -E gofmt -E golint -E gosec -E govet -E ineffassign -E lll -E maligned -E misspell -E staticcheck -E structcheck -E typecheck -E unconvert -E varcheck
 

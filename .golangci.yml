@@ -1,3 +1,37 @@
+# github.com/x448/float16/.golangci.yml
+linters:
+  disable-all: true
+  enable:
+    - deadcode
+    - dupl    
+    - errcheck
+    - goconst
+    - gocyclo
+    - gofmt
+    - golint
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - maligned
+    - misspell
+    - staticcheck
+    - structcheck
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - varcheck
+   
+issues:
+  # Excluding configuration per-path, per-linter, per-text and per-source
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - gomnd
+        - lll
+
+# Do not remove linters-settings, some extra linters like gocritic are enabled from Github Actions or cli.
 linters-settings:
   dupl:
     threshold: 100
@@ -37,62 +71,3 @@ linters-settings:
     suggest-new: true
   misspell:
     locale: US
-
-linters:
-  disable-all: true
-  enable:
-    - bodyclose
-    - deadcode
-    - depguard
-    - dogsled
-    - dupl
-    - errcheck
-    - funlen
-    - gochecknoinits
-    - goconst
-    - gocritic
-    - gocyclo
-    - gofmt
-    - goimports
-    - golint
-    - goprintffuncname
-    - gosec
-    - gosimple
-    - govet
-    - ineffassign
-    - interfacer
-    - lll
-    - maligned
-    - misspell
-    - nakedret
-    - rowserrcheck
-    - scopelint
-    - staticcheck
-    - structcheck
-    - stylecheck
-    - typecheck
-    - unconvert
-    - unparam
-    - unused
-    - varcheck
-
-
-  # don't enable:
-  # - gochecknoglobals
-  # - gocognit
-  # - godox
-  # - gomnd
-  # - prealloc
-  # - whitespace
-    
-issues:
-  # Excluding configuration per-path, per-linter, per-text and per-source
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - lll
-
-# golangci.com configuration
-# https://github.com/golangci/golangci/wiki/Configuration
-service:
-  golangci-lint-version: 1.23.x # use the fixed version to not introduce new linters unexpectedly
