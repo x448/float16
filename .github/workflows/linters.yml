@@ -2,7 +2,6 @@
 # This workflow runs golangci-lint with linters specified in .golangci.yml plus linters enabled here.
 # To disable a linter, it must be removed from this file and also from .golangci.yml.
 # Required linters must pass.  Optional linters don't need to pass so they can be more aggressive.
-# Author: Montgomery Edwards⁴⁴⁸ (github.com/x448)
 name: linters
 on: [push]
 jobs:  
