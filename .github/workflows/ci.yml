@@ -1,5 +1,4 @@
 # GitHub Actions - CI for Go with just builders and tests.  Use cover.yml and linters.yml for coverage and linting.
-# Author: Montgomery Edwards⁴⁴⁸ (github.com/x448)
 name: ci
 on: [push]
 jobs:
