@@ -13,9 +13,7 @@ jobs:
         os: [macos-latest, ubuntu-latest]
     steps:
     - name: Checkout code
-      uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
+      uses: actions/checkout@v2
     - name: Get dependencies
       run: go get -v -t -d ./...
     - name: Build project
@@ -24,7 +22,3 @@ jobs:
       run: |
         go version
         go test -short -race -v ./...
-
-  ## Codecov.io is deprecated. IMHO, codecov.io asked for too much info.
-  ## Use https://github.com/x448/.github/workflows/cover.yml (go test -cover plus python = privacy).
-
