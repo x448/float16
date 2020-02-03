@@ -6,7 +6,7 @@
 [![Release](https://img.shields.io/github/release/x448/float16.svg?style=flat-square)](https://github.com/x448/float16/releases)
 [![License](http://img.shields.io/badge/license-mit-blue.svg?style=flat-square)](https://raw.githubusercontent.com/x448/float16/master/LICENSE)
 
-`float16` package provides [IEEE 754 half-precision floating-point format (binary16)](https://en.wikipedia.org/wiki/Half-precision_floating-point_format) with IEEE 754 default rounding for conversions. IEEE 754-2008 refers to this 16-bit floating-point format as binary16.
+[__`x448/float16`__](https://github.com/x448/float16) package provides [IEEE 754 half-precision floating-point format (binary16)](https://en.wikipedia.org/wiki/Half-precision_floating-point_format) with IEEE 754 default rounding for conversions. IEEE 754-2008 refers to this 16-bit floating-point format as binary16.
 
 IEEE 754 default rounding ("Round-to-Nearest RoundTiesToEven") is considered the most accurate and statistically unbiased estimate of the true result.
 
@@ -130,6 +130,6 @@ Other architectures and Go versions may work, but are not tested regularly.
 Special thanks to Kathryn Long (starkat99) for creating [half-rs](https://github.com/starkat99/half-rs), a very nice rust implementation of float16.
 
 ## License
-Copyright (c) 2019-present Montgomery Edwards⁴⁴⁸ and Faye Amacker
+Copyright © 2019-present Montgomery Edwards⁴⁴⁸ and Faye Amacker.
 
-Licensed under [MIT License](LICENSE)
+x448/float16 is licensed under the MIT License.  See [LICENSE](LICENSE) for the full license text.
