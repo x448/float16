@@ -1,7 +1,7 @@
 # Float16 (Binary16) in Go/Golang
-[![](https://github.com/x448/float16/workflows/ci/badge.svg)](https://github.com/x448/float16/blob/master/.github/workflows/ci.yml)
-[![](https://github.com/x448/float16/workflows/cover%20100%25/badge.svg)](https://github.com/x448/float16/blob/master/.github/workflows/cover.yml)
-[![](https://github.com/x448/float16/workflows/linters/badge.svg)](https://github.com/x448/float16/blob/master/.github/workflows/linters.yml)
+[![](https://github.com/x448/float16/workflows/ci/badge.svg)](https://github.com/x448/float16/actions?query=workflow%3Aci)
+[![](https://github.com/x448/float16/workflows/cover%20100%25/badge.svg)](https://github.com/x448/float16/actions?query=workflow%3A%22cover+100%25%22)
+[![](https://github.com/x448/float16/workflows/linters/badge.svg)](https://github.com/x448/float16/actions?query=workflow%3Alinters)
 [![Go Report Card](https://goreportcard.com/badge/github.com/x448/float16)](https://goreportcard.com/report/github.com/x448/float16)
 [![Release](https://img.shields.io/github/release/x448/float16.svg?style=flat-square)](https://github.com/x448/float16/releases)
 [![License](http://img.shields.io/badge/license-mit-blue.svg?style=flat-square)](https://raw.githubusercontent.com/x448/float16/master/LICENSE)
