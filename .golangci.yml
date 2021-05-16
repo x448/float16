@@ -8,13 +8,13 @@ linters:
     - goconst
     - gocyclo
     - gofmt
-    - golint
     - gosec
     - gosimple
     - govet
     - ineffassign
-    - maligned
     - misspell
+    - nilerr
+    - revive
     - staticcheck
     - structcheck
     - typecheck
