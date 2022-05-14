@@ -1,5 +1,5 @@
 # GitHub Actions - CI for Go with just builders and tests.
-# We use cover.yml and linters.yml for coverage and linting.
+# Use cover.yml for coverage and safer-golangci-lint.yml for linting.
 name: ci
 on:
   workflow_dispatch:
