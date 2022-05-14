@@ -2,8 +2,13 @@
 # We use cover.yml and linters.yml for coverage and linting.
 name: ci
 on:
-  pull_request:
   workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - 'master'
+    tags:
+      - 'v*'  
 jobs:
   # Test on various OS and go versions.
   tests:
