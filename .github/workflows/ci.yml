@@ -1,4 +1,5 @@
 # GitHub Actions - CI for Go with just builders and tests.
+# https://github.com/x448/float16/blob/master/.github/workflows/ci.yml 
 # Use cover.yml for coverage and safer-golangci-lint.yml for linting.
 name: ci
 on:
@@ -10,19 +11,20 @@ on:
     tags:
       - 'v*'
 
-# Use minimum permissions needed to build and test.
-permissions:
-  contents: read
+# Revoke default permissions.
+permissions: {}
   
 jobs:
   # Test on various OS and go versions.
   tests:
-    name: Test on ${{matrix.os}} go-${{ matrix.go-version }}
-    runs-on: ${{ matrix.os }}
+    name: test ${{matrix.os}} go-${{ matrix.go-version }}
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
         go-version: [1.16, 1.17, 1.18]
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
     steps:
     - name: Install Go
       uses: actions/setup-go@v3
