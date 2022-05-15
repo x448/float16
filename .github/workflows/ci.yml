@@ -25,18 +25,23 @@ jobs:
     runs-on: ${{ matrix.os }}
     permissions:
       contents: read
+
     steps:
     - name: Install Go
       uses: actions/setup-go@v3
       with:
         go-version: ${{ matrix.go-version }}
         check-latest: true
+
     - name: Checkout code
       uses: actions/checkout@v3
+
     - name: Get dependencies
       run: go get -v -t -d ./...
+
     - name: Build project
       run: go build ./...
+
     - name: Run tests
       run: |
         go version
