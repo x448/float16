@@ -8,11 +8,16 @@ on:
     branches:
       - 'master'
     tags:
-      - 'v*'  
+      - 'v*'
+
+# Use minimum permissions needed to build and test.
+permissions:
+  contents: read
+  
 jobs:
   # Test on various OS and go versions.
   tests:
-    name: Test on ${{matrix.os}}
+    name: Test on ${{matrix.os}} go-${{ matrix.go-version }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
