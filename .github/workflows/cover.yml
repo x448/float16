@@ -14,6 +14,10 @@
 # 2. Change README.md to use the new path to badge.svg because the path includes the workflow name.
 
 name: cover 100%
+
+# Remove default permissions
+permissions: {}
+
 on: [push]
 jobs:
 
@@ -21,10 +25,12 @@ jobs:
   # The grep expression can't be too strict, it needed to be relaxed to work with different versions of Go.
   cover:
     name: Coverage
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - name: Go Coverage
       run: |
         go version
