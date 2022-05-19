@@ -65,7 +65,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
-          go-version: 1.17
+          go-latest: 1.17
           check-version: true
 
       - name: Install golangci-lint
