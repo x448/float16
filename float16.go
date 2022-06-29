@@ -3,6 +3,7 @@
 // Special thanks to Kathryn Long for her Rust implementation
 // of float16 at github.com/starkat99/half-rs (MIT license)
 
+// Package float16 defines support for half-precision floating-point numbers.
 package float16
 
 import (
