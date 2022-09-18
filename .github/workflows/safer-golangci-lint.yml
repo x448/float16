@@ -7,7 +7,7 @@
 # safer-golangci-lint.yml
 #
 # 100% of the script for downloading, installing, and running golangci-lint
-# is embedded in this file.  The embedded SHA384 digest is used to verify the 
+# is embedded in this file. The embedded SHA-256 digest is used to verify the
 # downloaded golangci-lint tarball (golangci-lint-1.49.0-linux-amd64.tar.gz). 
 #
 # To use:
