@@ -8,7 +8,10 @@
 #
 # 100% of the script for downloading, installing, and running golangci-lint
 # is embedded in this file. The embedded SHA-256 digest is used to verify the
-# downloaded golangci-lint tarball (golangci-lint-1.49.0-linux-amd64.tar.gz). 
+# downloaded golangci-lint tarball (golangci-lint-1.49.0-linux-amd64.tar.gz).
+#
+# The embedded SHA-256 digest matches golangci-lint-1.49.0-checksums.txt at
+# https://github.com/golangci/golangci-lint/releases
 #
 # To use:
 #   Step 1. Copy this file into [github_repo]/.github/workflows/
@@ -29,7 +32,7 @@
 #   - Hash of golangci-lint-1.49.0-linux-amd64.tar.gz
 #     - SHA-384: df59267a11317d2763fb6cb454a9b3a6a6d428f4750fcbb8604fb0d289b18a1b3b6cd2bfbf2a2fe976979e97a71fcc36
 #     - SHA-256: 5badc6e9fee2003621efa07e385910d9a88c89b38f6c35aded153193c5125178
-#                This SHA-256 matches golangci-lint-1.49.0-checksums.txt at
+#                This SHA-256 digest matches golangci-lint-1.49.0-checksums.txt at
 #                https://github.com/golangci/golangci-lint/releases
 #
 name: linters
