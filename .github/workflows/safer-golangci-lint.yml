@@ -6,11 +6,14 @@
 #
 # safer-golangci-lint.yml
 #
+# This workflow downloads, verifies, and runs golangci-lint in a
+# deterministic, reviewable, and safe manner.
+#
 # 100% of the script for downloading, installing, and running golangci-lint
 # is embedded in this file. The embedded SHA-256 digest is used to verify the
-# downloaded golangci-lint tarball (golangci-lint-1.49.0-linux-amd64.tar.gz).
+# downloaded golangci-lint tarball (golangci-lint-1.xx.x-linux-amd64.tar.gz).
 #
-# The embedded SHA-256 digest matches golangci-lint-1.49.0-checksums.txt at
+# The embedded SHA-256 digest matches golangci-lint-1.xx.x-checksums.txt at
 # https://github.com/golangci/golangci-lint/releases
 #
 # To use:
@@ -23,16 +26,12 @@
 #   1. GOLINTERS_VERSION
 #   2. GOLINTERS_TGZ_DGST
 #
-# Release v1.49.0 (September 18, 2022)
-#   - Put Go version in environment variable GO_VERSION.
-#   - Increase timeout to 15m for big projects enabling more linters.
-#   - Use SHA-256 to verify (instead of SHA-384) and mention checksums file.
+# Release v1.50.1 (October 22, 2022)
+#   - Bump golangci-lint to 1.50.1
 #   - Bump Go to 1.19 (latest version of 1.19.x because check-latest: true).
-#   - Bump golangci-lint to 1.49.0
-#   - Hash of golangci-lint-1.49.0-linux-amd64.tar.gz
-#     - SHA-384: df59267a11317d2763fb6cb454a9b3a6a6d428f4750fcbb8604fb0d289b18a1b3b6cd2bfbf2a2fe976979e97a71fcc36
-#     - SHA-256: 5badc6e9fee2003621efa07e385910d9a88c89b38f6c35aded153193c5125178
-#                This SHA-256 digest matches golangci-lint-1.49.0-checksums.txt at
+#   - Hash of golangci-lint-1.50.1-linux-amd64.tar.gz
+#     - SHA-256: 4ba1dc9dbdf05b7bdc6f0e04bdfe6f63aa70576f51817be1b2540bbce017b69a
+#                This SHA-256 digest matches golangci-lint-1.50.1-checksums.txt at
 #                https://github.com/golangci/golangci-lint/releases
 #
 name: linters
@@ -49,9 +48,9 @@ on:
 
 env:
   GO_VERSION: 1.19
-  GOLINTERS_VERSION: 1.49.0
+  GOLINTERS_VERSION: 1.50.1
   GOLINTERS_ARCH: linux-amd64
-  GOLINTERS_TGZ_DGST: 5badc6e9fee2003621efa07e385910d9a88c89b38f6c35aded153193c5125178
+  GOLINTERS_TGZ_DGST: 4ba1dc9dbdf05b7bdc6f0e04bdfe6f63aa70576f51817be1b2540bbce017b69a
   GOLINTERS_TIMEOUT: 15m
   OPENSSL_DGST_CMD: openssl dgst -sha256 -r
   CURL_CMD: curl --proto =https --tlsv1.2 --location --silent --show-error --fail
