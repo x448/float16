@@ -28,7 +28,6 @@
 #
 # Release v1.51.1 (February 5, 2023)
 #   - Bump golangci-lint to 1.51.1
-#   - Bump Go to 1.20 series
 #   - Hash of golangci-lint-1.50.1-linux-amd64.tar.gz
 #     - SHA-256: 17aeb26c76820c22efa0e1838b0ab93e90cfedef43fbfc9a2f33f27eb9e5e070
 #                This SHA-256 digest matches golangci-lint-1.51.1-checksums.txt at
@@ -47,7 +46,7 @@ on:
     branches: [main, master]
 
 env:
-  GO_VERSION: 1.20
+  GO_VERSION: 1.19
   GOLINTERS_VERSION: 1.51.1
   GOLINTERS_ARCH: linux-amd64
   GOLINTERS_TGZ_DGST: 17aeb26c76820c22efa0e1838b0ab93e90cfedef43fbfc9a2f33f27eb9e5e070
