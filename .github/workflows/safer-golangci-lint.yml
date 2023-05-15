@@ -48,7 +48,7 @@ on:
     branches: [main, master]
 
 env:
-  GO_VERSION: 1.20
+  GO_VERSION: '1.20'
   GOLINTERS_VERSION: 1.52.2
   GOLINTERS_ARCH: linux-amd64
   GOLINTERS_TGZ_DGST: c9cf72d12058a131746edd409ed94ccd578fbd178899d1ed41ceae3ce5f54501
