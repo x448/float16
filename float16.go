@@ -38,7 +38,6 @@ const (
 
 	// PrecisionOverflow is for Overflows. Cannot round-trip float32->float16->float32.
 	PrecisionOverflow
-
 )
 
 // SmallestNonzero value that is possible to represent in float16: 0.00006109476
