@@ -38,7 +38,12 @@ const (
 
 	// PrecisionOverflow is for Overflows. Cannot round-trip float32->float16->float32.
 	PrecisionOverflow
+
 )
+
+// SmallestNonzero value that is possible to represent in float16: 0.00006109476
+// It's the float16 equivalent for [math.SmallestNonzeroFloat32] and [math.SmallestNonzeroFloat64].
+const SmallestNonzero = Float16(0b000010000000001)
 
 // PrecisionFromfloat32 returns Precision without performing
 // the conversion.  Conversions from both Infinity and NaN
