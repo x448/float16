@@ -40,10 +40,12 @@ const (
 	PrecisionOverflow
 )
 
-// SmallestNonzero value that is possible to represent in float16: 0.00006109476
+// SmallestNonzero is the smallest nonzero denormal value for float16 (0.000000059604645).
 // It's the float16 equivalent for [math.SmallestNonzeroFloat32] and [math.SmallestNonzeroFloat64].
-const SmallestNonzero = Float16(0b000010000000001)
-
+// For context, [math.SmallestNonzeroFloat32] used the formula 1 / 2**(127 - 1 + 23) to produce
+// the smallest denormal value for float32 (1.401298464324817070923729583289916131280e-45).
+// The equivalent formula for float16 is 1 / 2**(15 - 1 + 10). We use Float16(0x0001) to compile as const.
+const SmallestNonzero = Float16(0x0001)  // 5.9604645e-08 (effectively 0x1p-14 * 0x1p-10)
 // PrecisionFromfloat32 returns Precision without performing
 // the conversion.  Conversions from both Infinity and NaN
 // values will always report PrecisionExact even if NaN payload
