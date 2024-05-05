@@ -794,5 +794,11 @@ func checkRoundTrippedPrecision(t *testing.T, u32 uint32, u16 uint16, u32bis uin
 			t.Errorf("PrecisionFromfloat32 in f32bits=0x%08x (%032b) (%f), out f16bits=0x%04x (%v), back=0x%08x (%f), got %v, wanted PrecisionExact, exp=%d, coef=%d, drpd=%d", u32, u32, f32, u16, f16, u32bis, f32bis, pre, exp32, coef32, dropped32)
 		}
 	}
+}
 
+func TestSmallestNonzero(t *testing.T) {
+	want := float32(0x1p-24) // -15 + 1 - 10
+	if float16.SmallestNonzero.Float32() != want {
+		t.Errorf("Invalid SmallestNonzero to float32 conversion: Float16=%s, wanted %g", float16.SmallestNonzero, want)
+	}
 }
