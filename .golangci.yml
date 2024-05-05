@@ -2,7 +2,6 @@
 linters:
   disable-all: true
   enable:
-    - deadcode
     - dupl    
     - errcheck
     - goconst
@@ -16,12 +15,10 @@ linters:
     - nilerr
     - revive
     - staticcheck
-    - structcheck
     - typecheck
     - unconvert
     - unparam
     - unused
-    - varcheck
    
 issues:
   # Excluding configuration per-path, per-linter, per-text and per-source
