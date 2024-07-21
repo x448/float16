@@ -1,3 +1,3 @@
 module github.com/x448/float16
 
-go 1.13
+go 1.17
