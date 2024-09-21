@@ -1,4 +1,4 @@
-# Copyright © 2021-2023 Montgomery Edwards⁴⁴⁸ (github.com/x448).
+# Copyright © 2021-2024 Montgomery Edwards⁴⁴⁸ (github.com/x448).
 # This file is licensed under MIT License.
 #
 # Safer GitHub Actions Workflow for golangci-lint.
@@ -27,14 +27,11 @@
 #   1. GOLINTERS_VERSION
 #   2. GOLINTERS_TGZ_DGST
 #
-# Release v1.52.2 (May 14, 2023)
-#   - Bump Go to 1.20
-#   - Bump actions/setup-go to v4
-#   - Bump golangci-lint to 1.52.2
-#   - Hash of golangci-lint-1.52.2-linux-amd64.tar.gz
-#     - SHA-256: c9cf72d12058a131746edd409ed94ccd578fbd178899d1ed41ceae3ce5f54501
-#                This SHA-256 digest matches golangci-lint-1.52.2-checksums.txt at
-#                https://github.com/golangci/golangci-lint/releases
+# Release v1.59.1
+#   - Bump golangci-lint to 1.59.1
+#   - Hash of golangci-lint-1.59.1-linux-amd64.tar.gz
+#     - SHA-256: c30696f1292cff8778a495400745f0f9c0406a3f38d8bb12cef48d599f6c7791
+#     - https://github.com/golangci/golangci-lint/releases/download/v1.59.1/golangci-lint-1.59.1-checksums.txt
 #
 name: linters
 
@@ -48,10 +45,10 @@ on:
     branches: [main, master]
 
 env:
-  GO_VERSION: '1.20'
-  GOLINTERS_VERSION: 1.52.2
+  GO_VERSION: '1.22'
+  GOLINTERS_VERSION: 1.59.1
   GOLINTERS_ARCH: linux-amd64
-  GOLINTERS_TGZ_DGST: c9cf72d12058a131746edd409ed94ccd578fbd178899d1ed41ceae3ce5f54501
+  GOLINTERS_TGZ_DGST: c30696f1292cff8778a495400745f0f9c0406a3f38d8bb12cef48d599f6c7791
   GOLINTERS_TIMEOUT: 15m
   OPENSSL_DGST_CMD: openssl dgst -sha256 -r
   CURL_CMD: curl --proto =https --tlsv1.2 --location --silent --show-error --fail
@@ -64,12 +61,12 @@ jobs:
       contents: read
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           fetch-depth: 1
 
       - name: Setup Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v5.0.2
         with:
           go-version: ${{ env.GO_VERSION }}
           check-latest: true
