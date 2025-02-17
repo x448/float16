@@ -14,6 +14,16 @@ All possible 4+ billion floating-point conversions with this library are verifie
 
 Lowercase "float16" refers to IEEE 754 binary16. And capitalized "Float16" refers to exported Go data type.
 
+This library started as a contribution to [fxamacker/cbor](https://github.com/fxamacker/cbor) and became a standalone library to allow use by other software.
+
+Software using this library include [cbor](https://github.com/fxamacker/cbor) and [ollama](https://github.com/ollama/ollama).
+
+> [!NOTE]
+> This float16 library is extremely well-tested:
+> - 100% code coverage for both `go test` and `go test -short`.
+> - All 4294967296 possible float32 to float16 conversions (in pure Go) are confirmed to be correct.
+> - All 65536 possible float16 to float32 conversions (in pure Go) are confirmed to be correct.
+
 ## Features
 Current features include:
 
@@ -25,7 +35,7 @@ Current features include:
 * all functions in this library use zero allocs except String().
 
 ## Status
-This library is used by [fxamacker/cbor](https://github.com/fxamacker/cbor) and is ready for production use on supported platforms. The version number < 1.0 indicates more functions and options are planned but not yet published.
+This library is ready for production use on supported platforms.  The version number < 1.0 indicates more functions and options are planned but not yet published.
 
 Current status:
 
