@@ -6,7 +6,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/Joey574/float16"
+	"github.com/x448/float16"
 )
 
 // prevent compiler optimizing out code by assigning to these
@@ -85,4 +85,16 @@ func BenchmarkString(b *testing.B) {
 		result = pi16.String()
 	}
 	resultStr = result
+}
+
+func BenchmarkMarshalJson(b *testing.B) {
+	var result []byte
+
+	pi32 := float32(math.Pi)
+	pi16 := float16.Fromfloat32(pi32)
+
+	for i := 0; i < b.N; i++ {
+		result, _ = pi16.MarshalJSON()
+	}
+	resultStr = string(result)
 }
