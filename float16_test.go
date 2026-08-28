@@ -616,6 +616,20 @@ func TestString(t *testing.T) {
 
 }
 
+func TestMarshalJson(t *testing.T) {
+	f16 := float16.Fromfloat32(1.5)
+	s, _ := f16.MarshalJSON()
+	if string(s) != "1.5" {
+		t.Errorf("Float16(1.5).MarshalJson() returned %s, wanted 1.5", s)
+	}
+
+	f16 = float16.Fromfloat32(3.14159)
+	s, _ = f16.MarshalJSON()
+	if string(s) != "3.140625" {
+		t.Errorf("Float16(3.141593).MarshalJson() returned %s, wanted 3.140625", s)
+	}
+}
+
 func TestIsInf(t *testing.T) {
 
 	f16 := float16.Float16(0)
