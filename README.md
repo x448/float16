@@ -1,3 +1,5 @@
+
+
 # Float16 (Binary16) in Go/Golang
 [![](https://github.com/x448/float16/workflows/ci/badge.svg)](https://github.com/x448/float16/actions?query=workflow%3Aci)
 [![](https://github.com/x448/float16/workflows/cover%20100%25/badge.svg)](https://github.com/x448/float16/actions?query=workflow%3A%22cover+100%25%22)
@@ -131,7 +133,7 @@ PrecisionFromFloat32-2  0.29ns ± 1%  // speed using PrecisionFromfloat32() to c
 ```
 
 ## System Requirements
-* Go 1.12 (or newer).
+* Go 1.17 (or newer).
 * amd64, arm64, ppc64le, or s390x.
 
 Other architectures and Go versions may work, but are not tested regularly.
