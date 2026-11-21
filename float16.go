@@ -222,6 +222,11 @@ func (f Float16) String() string {
 	return strconv.FormatFloat(float64(f.Float32()), 'f', -1, 32)
 }
 
+// MarshalJSON satisfies json marshaller
+func (f Float16) MarshalJSON() ([]byte, error) {
+	return []byte(f.String()), nil
+}
+
 // f16bitsToF32bits returns uint32 (float32 bits) converted from specified uint16.
 func f16bitsToF32bits(in uint16) uint32 {
 	// All 65536 conversions with this were confirmed to be correct
